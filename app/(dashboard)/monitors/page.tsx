@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import DashboardClient from './dashboard-client'
+import MonitorsClient from './monitors-client'
 
-export default async function DashboardPage() {
+export default async function MonitorsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()          
 
@@ -14,5 +14,5 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  return <DashboardClient monitors={monitors || []} />
+  return <MonitorsClient monitors={monitors || []} />
 }

@@ -1,109 +1,158 @@
-import { Button } from '@/components/ui/button'
+"use client";
 
-export default function LandingPage() {
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Terminal, Activity, ShieldCheck, Zap } from "lucide-react";
+
+const fadeUpVariants: any = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "circOut" } }
+};
+
+const staggerContainer: any = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background text-foreground font-sans overflow-hidden">
+      
+      {/* Precision Grid Background */}
+      <div className="fixed inset-0 z-0 opacity-10 pointer-events-none bg-grid-pattern mask-radial-faded" />
 
-      {/* Navbar */}
-      <nav className="border-b px-8 py-4 flex items-center justify-between">
-        <span className="text-xl font-bold text-gray-900">🟢 CronGuard</span>
-        <div className="flex gap-3">
-          <a href="/login">
-            <Button variant="outline">Sign in</Button>
-          </a>
-          <a href="/signup">
-            <Button>Get started free</Button>
-          </a>
+      {/* Structured Nav */}
+      <nav className="fixed top-0 w-full z-50 border-b border-border-subtle bg-background/80 backdrop-blur-md">
+        <div className="container mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 bg-foreground flex items-center justify-center rounded-sm">
+               <div className="w-2 h-2 bg-background" />
+            </div>
+            <span className="font-semibold tracking-tight text-sm">CronGuard</span>
+          </div>
+          <div className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
+            <Link href="#features" className="hover:text-foreground transition-colors">Features</Link>
+            <Link href="#pricing" className="hover:text-foreground transition-colors">Pricing</Link>
+            <Link href="#docs" className="hover:text-foreground transition-colors">Documentation</Link>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/login">
+              <span className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">Log in</span>
+            </Link>
+            <Link href="/signup">
+              <Button className="h-8 rounded-md bg-foreground text-background hover:bg-foreground/90 font-medium text-xs px-4">
+                Start for free
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <div className="max-w-4xl mx-auto text-center py-24 px-8">
-        <h1 className="text-5xl font-bold text-gray-900 leading-tight">
-          Know instantly when your <br />
-          <span className="text-green-600">cron job fails</span>
-        </h1>
-        <p className="mt-6 text-xl text-gray-500 max-w-2xl mx-auto">
-          CronGuard monitors your scheduled tasks 24/7. 
-          Get alerted the moment something goes wrong — before your users notice.
-        </p>
-        <div className="mt-10 flex gap-4 justify-center">
-          <a href="/signup">
-            <Button size="lg" className="text-lg px-8">
-              Start monitoring free →
-            </Button>
-          </a>
+      {/* Hero Section */}
+      <main className="relative z-10 pt-32 pb-20 md:pt-48 md:pb-32 container mx-auto px-6">
+        <motion.div 
+          className="max-w-4xl mx-auto text-center"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={fadeUpVariants} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border-strong bg-surface mb-8">
+             <span className="w-2 h-2 rounded-full bg-primary" />
+             <span className="text-xs font-semibold tracking-wide text-muted-foreground">CRONGUARD v2.0 IS LIVE</span>
+          </motion.div>
+          
+          <motion.h1 variants={fadeUpVariants} className="text-5xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.1] mb-6">
+            Infrastructure monitoring,<br className="hidden md:block"/> engineered for precision.
+          </motion.h1>
+          
+          <motion.p variants={fadeUpVariants} className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+            A minimalist, high-performance platform to track every cron job, background worker, and scheduled task. Know immediately when silent failures occur.
+          </motion.p>
+          
+          <motion.div variants={fadeUpVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/signup">
+              <Button className="h-11 px-8 rounded-md bg-foreground text-background hover:bg-foreground/90 font-medium shadow-none">
+                Start Monotoring <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+            <Link href="#docs">
+              <Button variant="outline" className="h-11 px-8 rounded-md border-border-strong text-foreground hover:bg-surface shadow-none">
+                Read Documentation
+              </Button>
+            </Link>
+          </motion.div>
+        </motion.div>
+
+        {/* Flat Terminal Mockup */}
+        <motion.div 
+          variants={fadeUpVariants}
+          initial="hidden"
+          animate="visible"
+          className="mt-20 max-w-3xl mx-auto"
+        >
+          <div className="border border-border-strong rounded-lg bg-[#1f1b18] overflow-hidden shadow-[0_20px_50px_rgba(22,23,17,0.8)]">
+            <div className="flex border-b border-border-subtle bg-surface px-4 py-2.5 items-center justify-between">
+              <div className="flex gap-2">
+                 <div className="w-2.5 h-2.5 rounded-full bg-border-strong" />
+                 <div className="w-2.5 h-2.5 rounded-full bg-border-strong" />
+                 <div className="w-2.5 h-2.5 rounded-full bg-border-strong" />
+              </div>
+              <span className="text-[10px] font-mono text-muted-foreground">bash — 80x24</span>
+            </div>
+            <div className="p-6 font-mono text-xs md:text-sm text-muted-foreground leading-relaxed">
+              <p><span className="text-primary">$</span> cronguard login</p>
+              <p className="text-foreground">Authentication successful.</p>
+              <br/>
+              <p><span className="text-primary">$</span> cronguard monitor:create --name "DB Backup" --schedule "0 0 * * *"</p>
+              <p className="text-foreground">Created monitor: <span className="text-muted-foreground">mon_z9x8c7v6b5n4m</span></p>
+              <br/>
+              <p><span className="text-primary">$</span> cronguard ping mon_z9x8c7v6b5n4m</p>
+              <p className="text-primary">200 OK — Ping acknowledged.</p>
+              <br/>
+              <p className="animate-pulse"><span className="text-primary">$</span> _</p>
+            </div>
+          </div>
+        </motion.div>
+      </main>
+
+      {/* Structural Features Section */}
+      <section id="features" className="py-24 border-t border-border-subtle bg-surface/30 relative z-10">
+        <div className="container mx-auto px-6 max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border-subtle border border-border-subtle rounded-xl overflow-hidden">
+            
+            <div className="bg-background p-10 flex flex-col justify-center">
+              <Terminal className="w-6 h-6 text-foreground mb-6" />
+              <h3 className="text-xl font-semibold mb-3">CLI First</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">Everything you can do in the dashboard, you can do from your terminal. Built for developers who prefer to stay in their editor.</p>
+            </div>
+            
+            <div className="bg-background p-10 flex flex-col justify-center">
+              <Activity className="w-6 h-6 text-foreground mb-6" />
+              <h3 className="text-xl font-semibold mb-3">Instant Telemetry</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">Pings are processed with sub-millisecond latency. Your dashboard updates in real-time without polling.</p>
+            </div>
+            
+            <div className="bg-background p-10 flex flex-col justify-center">
+               <ShieldCheck className="w-6 h-6 text-foreground mb-6" />
+               <h3 className="text-xl font-semibold mb-3">Grace Periods</h3>
+               <p className="text-muted-foreground text-sm leading-relaxed">Define exact intervals with configurable grace periods to prevent false positives during heavy server loads.</p>
+            </div>
+            
+            <div className="bg-background p-10 flex flex-col justify-center">
+               <Zap className="w-6 h-6 text-foreground mb-6" />
+               <h3 className="text-xl font-semibold mb-3">Webhooks & Slack</h3>
+               <p className="text-muted-foreground text-sm leading-relaxed">Route critical alerts directly to PagerDuty, Slack, or any custom webhook endpoint the moment a task fails.</p>
+            </div>
+
+          </div>
         </div>
-        <p className="mt-4 text-sm text-gray-400">
-          Free for up to 3 monitors. No credit card required.
-        </p>
-      </div>
+      </section>
 
-      {/* Features */}
-      <div className="max-w-5xl mx-auto px-8 py-16 grid grid-cols-3 gap-8">
-        {[
-          {
-            icon: '⚡',
-            title: 'Instant alerts',
-            desc: 'Get notified by email the moment your cron job misses a ping.'
-          },
-          {
-            icon: '📊',
-            title: 'Simple dashboard',
-            desc: 'See all your monitors and their status at a glance.'
-          },
-          {
-            icon: '🔗',
-            title: 'Easy integration',
-            desc: 'Add one curl command to your cron job and you\'re done.'
-          },
-        ].map((f) => (
-          <div key={f.title} className="text-center p-6 rounded-xl border bg-gray-50">
-            <div className="text-4xl mb-4">{f.icon}</div>
-            <h3 className="font-semibold text-lg text-gray-900">{f.title}</h3>
-            <p className="mt-2 text-gray-500 text-sm">{f.desc}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Pricing */}
-      <div className="max-w-3xl mx-auto px-8 py-16 text-center">
-        <h2 className="text-3xl font-bold text-gray-900">Simple pricing</h2>
-        <p className="mt-3 text-gray-500">No surprises. Cancel anytime.</p>
-        <div className="mt-10 grid grid-cols-2 gap-6">
-          <div className="border rounded-xl p-8 text-left">
-            <h3 className="font-bold text-xl">Free</h3>
-            <p className="text-4xl font-bold mt-4">$0<span className="text-lg text-gray-400">/mo</span></p>
-            <ul className="mt-6 space-y-2 text-sm text-gray-600">
-              <li>✅ Up to 3 monitors</li>
-              <li>✅ Email alerts</li>
-              <li>✅ 30-day ping history</li>
-            </ul>
-            <a href="/signup">
-              <Button variant="outline" className="w-full mt-8">Get started</Button>
-            </a>
-          </div>
-          <div className="border-2 border-green-500 rounded-xl p-8 text-left bg-green-50">
-            <h3 className="font-bold text-xl">Pro</h3>
-            <p className="text-4xl font-bold mt-4">$7<span className="text-lg text-gray-400">/mo</span></p>
-            <ul className="mt-6 space-y-2 text-sm text-gray-600">
-              <li>✅ Unlimited monitors</li>
-              <li>✅ Email alerts</li>
-              <li>✅ 90-day ping history</li>
-              <li>✅ Priority support</li>
-            </ul>
-            <a href="/signup">
-              <Button className="w-full mt-8">Start free trial</Button>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="border-t py-8 text-center text-sm text-gray-400">
-        © 2025 CronGuard. Built with ❤️ for developers.
+      {/* Minimal Footer */}
+      <footer className="border-t border-border-subtle bg-background py-10 relative z-10 text-center">
+         <p className="text-xs text-muted-foreground">© 2026 CronGuard Platform. Engineered for reliability.</p>
       </footer>
-
     </div>
-  )
+  );
 }
