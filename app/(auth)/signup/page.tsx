@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { signupSchema } from '@/lib/validations'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -19,7 +20,20 @@ export default function SignupPage() {
   async function handleSignup() {
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signUp({ email, password })
+
+    // ---- Client-side validation ----
+    const parsed = signupSchema.safeParse({ email, password })
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message)
+      setLoading(false)
+      return
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email: parsed.data.email,
+      password: parsed.data.password,
+    })
+
     if (error) {
       setError(error.message)
       setLoading(false)
@@ -45,6 +59,8 @@ export default function SignupPage() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              maxLength={254}
+              autoComplete="email"
             />
           </div>
           <div className="space-y-2">
@@ -55,7 +71,12 @@ export default function SignupPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              maxLength={128}
+              autoComplete="new-password"
             />
+            <p className="text-xs text-gray-400">
+              Min 8 characters, one uppercase, one number
+            </p>
           </div>
           <Button className="w-full" onClick={handleSignup} disabled={loading}>
             {loading ? 'Creating account...' : 'Create account'}

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { loginSchema } from '@/lib/validations'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -19,9 +20,23 @@ export default function LoginPage() {
   async function handleLogin() {
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    // ---- Client-side validation ----
+    const parsed = loginSchema.safeParse({ email, password })
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message)
+      setLoading(false)
+      return
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: parsed.data.email,
+      password: parsed.data.password,
+    })
+
     if (error) {
-      setError(error.message)
+      // Generic error — don't reveal if email exists
+      setError('Invalid email or password')
       setLoading(false)
     } else {
       router.push('/dashboard')
@@ -45,6 +60,8 @@ export default function LoginPage() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              maxLength={254}
+              autoComplete="email"
             />
           </div>
           <div className="space-y-2">
@@ -55,6 +72,8 @@ export default function LoginPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              maxLength={128}
+              autoComplete="current-password"
             />
           </div>
           <Button className="w-full" onClick={handleLogin} disabled={loading}>

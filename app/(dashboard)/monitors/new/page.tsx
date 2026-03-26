@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { createMonitorSchema } from '@/lib/validations'
 
 export default function NewMonitorPage() {
   const [name, setName] = useState('')
@@ -22,23 +23,38 @@ export default function NewMonitorPage() {
     setLoading(true)
     setError('')
 
+    // ---- Validate inputs ----
+    const parsed = createMonitorSchema.safeParse({
+      name,
+      interval_minutes: intervalMinutes,
+      grace_minutes: graceMinutes,
+      alert_email: alertEmail,
+    })
+
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message)
+      setLoading(false)
+      return
+    }
+
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       router.push('/login')
       return
     }
 
+    // ---- Only insert validated & sanitized fields ----
     const { error } = await supabase.from('monitors').insert({
       user_id: user.id,
-      name,
-      interval_minutes: intervalMinutes,
-      grace_minutes: graceMinutes,
-      alert_email: alertEmail,
+      name: parsed.data.name,
+      interval_minutes: parsed.data.interval_minutes,
+      grace_minutes: parsed.data.grace_minutes,
+      alert_email: parsed.data.alert_email,
       status: 'waiting',
     })
 
     if (error) {
-      setError(error.message)
+      setError('Failed to create monitor. Please try again.')
       setLoading(false)
     } else {
       router.push('/dashboard')
@@ -56,9 +72,7 @@ export default function NewMonitorPage() {
         <Card>
           <CardHeader>
             <CardTitle>Create a new monitor</CardTitle>
-            <CardDescription>
-              We'll alert you if your cron job misses a ping
-            </CardDescription>
+            <CardDescription>We'll alert you if your cron job misses a ping</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -70,6 +84,7 @@ export default function NewMonitorPage() {
                 placeholder="e.g. Daily Backup Job"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                maxLength={100}
               />
             </div>
 
@@ -78,11 +93,12 @@ export default function NewMonitorPage() {
               <Input
                 id="interval"
                 type="number"
-                placeholder="60"
+                min={1}
+                max={10080}
                 value={intervalMinutes}
                 onChange={(e) => setIntervalMinutes(Number(e.target.value))}
               />
-              <p className="text-xs text-gray-500">How often should your cron job run?</p>
+              <p className="text-xs text-gray-500">Between 1 and 10,080 minutes (7 days)</p>
             </div>
 
             <div className="space-y-2">
@@ -90,11 +106,12 @@ export default function NewMonitorPage() {
               <Input
                 id="grace"
                 type="number"
-                placeholder="5"
+                min={1}
+                max={60}
                 value={graceMinutes}
                 onChange={(e) => setGraceMinutes(Number(e.target.value))}
               />
-              <p className="text-xs text-gray-500">How long to wait before alerting you?</p>
+              <p className="text-xs text-gray-500">Between 1 and 60 minutes</p>
             </div>
 
             <div className="space-y-2">
@@ -105,6 +122,7 @@ export default function NewMonitorPage() {
                 placeholder="you@example.com"
                 value={alertEmail}
                 onChange={(e) => setAlertEmail(e.target.value)}
+                maxLength={254}
               />
             </div>
 

@@ -6,6 +6,19 @@ export const metadata: Metadata = {
   description: "Monitor your scheduled tasks 24/7. Get alerted the moment something goes wrong.",
 };
 
+import { Outfit, Great_Vibes } from "next/font/google";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const greatVibes = Great_Vibes({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-script",
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -16,7 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className={`${outfit.variable} ${greatVibes.variable} min-h-full flex flex-col font-sans`}>{children}</body>
     </html>
   );
 }
