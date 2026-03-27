@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CronGuard | Modern Cron Job Monitoring",
-  description: "Monitor your scheduled tasks 24/7. Get alerted the moment something goes wrong.",
+  title: "CronWatch | Modern Cron Job Monitoring",
+  description: "Monitor your scheduled tasks 24/7 with CronWatch. Get alerted the moment something goes wrong.",
 };
 
 import { Outfit, Great_Vibes } from "next/font/google";

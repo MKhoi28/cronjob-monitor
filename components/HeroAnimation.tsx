@@ -106,11 +106,11 @@ export default function HeroAnimation() {
 
     // Animation loop
     let animId: number
-    const clock = new THREE.Clock()
+    const clock = new THREE.Timer()
 
     const animate = () => {
       animId = requestAnimationFrame(animate)
-      const elapsed = clock.getElapsedTime()
+      const elapsed = clock.getElapsed()
 
       // Smooth mouse follow
       targetX += (mouseX - targetX) * 0.05
@@ -327,7 +327,7 @@ export default function HeroAnimation() {
 
         {/* Subtitle */}
         <p ref={subtitleRef} className="text-lg text-gray-400 max-w-2xl mx-auto mb-10 font-mono">
-          {'>'} CronGuard monitors your scheduled tasks 24/7.
+          {'>'} CronWatch monitors your scheduled tasks 24/7.
           <br />
           {'>'} Get alerted before your users notice anything.
         </p>
@@ -357,10 +357,10 @@ export default function HeroAnimation() {
             <div className="w-3 h-3 rounded-full bg-red-500/70" />
             <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
             <div className="w-3 h-3 rounded-full bg-green-500/70" />
-            <span className="ml-3 font-mono text-xs text-gray-500">cronguard ~ monitor</span>
+            <span className="ml-3 font-mono text-xs text-gray-500">cronwatch ~ monitor</span>
           </div>
           <div className="p-6 font-mono text-sm space-y-2">
-            <p className="terminal-line"><span className="text-green-400">$</span> <span className="text-gray-300">curl https://cronguard.app/api/ping/your-id</span></p>
+            <p className="terminal-line"><span className="text-green-400">$</span> <span className="text-gray-300">curl https://cronwatch.app/api/ping/your-id</span></p>
             <p className="terminal-line text-gray-500">{'# Add this to the end of your cron job'}</p>
             <p className="terminal-line mt-4"><span className="text-green-400">✓</span> <span className="text-gray-300">Monitor <span className="text-green-400">daily-backup</span> pinged successfully</span></p>
             <p className="terminal-line"><span className="text-green-400">✓</span> <span className="text-gray-300">Status: <span className="text-green-400">healthy</span> — last seen 2 minutes ago</span></p>

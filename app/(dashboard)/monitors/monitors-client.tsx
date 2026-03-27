@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Link from "next/link";
 import { Activity, Clock, Plus, TerminalSquare, Search, Filter } from "lucide-react";
 import { useState } from "react";
+import HeroAnimation from "@/components/HeroAnimation";
+import { THEMES, ThemeChooserBar } from "@/components/ThemeChooserBar";
 
 type Monitor = any;
 
@@ -24,19 +26,36 @@ const itemVariants: any = {
 
 export default function MonitorsClient({ monitors }: { monitors: Monitor[] }) {
   const [search, setSearch] = useState("");
+  const [activeTheme, setActiveTheme] = useState(0);
+  const theme = THEMES[activeTheme];
 
   const filteredMonitors = monitors?.filter(m => 
     m.name.toLowerCase().includes(search.toLowerCase())
   ) || [];
 
   return (
-    <motion.div 
-      className="max-w-6xl w-full space-y-6"
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
+    <div
+      className="relative left-[-1rem] right-[-1rem] md:left-[-2.5rem] md:right-[-2.5rem] w-[calc(100%+2rem)] md:w-[calc(100%+5rem)] px-4 md:px-10 pb-8"
+      style={{
+        background:
+          `radial-gradient(circle at 8% 0%, ${theme.accent}44 0%, transparent 45%),` +
+          `radial-gradient(circle at 100% 100%, ${theme.palette[1]}CC 0%, transparent 40%),` +
+          theme.palette[0],
+      }}
     >
-      <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="max-w-6xl mx-auto">
+        <ThemeChooserBar activeTheme={activeTheme} onChange={setActiveTheme} />
+      </div>
+
+      <HeroAnimation />
+
+      <motion.div 
+        className="max-w-6xl w-full space-y-6 mx-auto relative z-20 -mt-24"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1">Monitors</h1>
           <p className="text-sm text-muted-foreground">Manage and route all active cron job checks.</p>
@@ -48,9 +67,9 @@ export default function MonitorsClient({ monitors }: { monitors: Monitor[] }) {
             </Button>
           </Link>
         </div>
-      </motion.div>
+        </motion.div>
 
-      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 items-center justify-between">
          <div className="relative w-full sm:max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
@@ -60,10 +79,10 @@ export default function MonitorsClient({ monitors }: { monitors: Monitor[] }) {
               className="w-full pl-9 h-9 text-sm bg-surface border-border-subtle hover:border-border-strong rounded-md transition-colors"
             />
          </div>
-      </motion.div>
+        </motion.div>
 
-      <motion.div variants={itemVariants}>
-        <div className="border border-border-subtle rounded-md bg-background overflow-hidden">
+        <motion.div variants={itemVariants}>
+          <div className="border border-border-subtle rounded-md bg-background overflow-hidden">
             {filteredMonitors.length === 0 ? (
               <div className="text-center py-16 px-6 bg-surface/30">
                 <div className="w-12 h-12 rounded-lg border border-border-subtle bg-surface flex items-center justify-center mx-auto mb-4">
@@ -127,8 +146,9 @@ export default function MonitorsClient({ monitors }: { monitors: Monitor[] }) {
                 </Table>
               </div>
             )}
-        </div>
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
