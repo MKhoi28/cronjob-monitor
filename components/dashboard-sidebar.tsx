@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, LayoutDashboard, Settings, LogOut } from "lucide-react";
+import { Activity, LayoutDashboard, Settings } from "lucide-react";
 
 export function DashboardSidebar() {
   const pathname = usePathname();
@@ -10,7 +10,7 @@ export function DashboardSidebar() {
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "All Monitors", href: "/monitors", icon: Activity },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Account", href: "/settings", icon: Settings },
   ];
 
   return (
@@ -56,12 +56,7 @@ export function DashboardSidebar() {
                </div>
              </div>
           </div>
-          <form action="/auth/signout" method="post">
-            <button className="flex w-full items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors text-sm font-medium">
-              <LogOut className="w-4 h-4" />
-              Sign Out
-            </button>
-          </form>
+
         </div>
       </aside>
   );

@@ -1,12 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
-import { Activity, CheckCircle2, AlertTriangle, Clock, Plus, TerminalSquare } from "lucide-react";
+import { Clock, Plus, TerminalSquare } from "lucide-react";
+import { useAppTheme } from "@/components/DashboardShell";
 
 type Monitor = any;
 
@@ -14,121 +12,117 @@ const containerVariants: any = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.05 } }
 };
-
 const itemVariants: any = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } }
 };
 
 export default function DashboardClient({ monitors }: { monitors: Monitor[] }) {
+  const theme = useAppTheme();
+  const [base, panel] = theme.palette;
+  const accent        = theme.accent;
+
   const healthyCount = monitors?.filter(m => m.status === 'healthy').length ?? 0;
-  const downCount = monitors?.filter(m => m.status === 'down').length ?? 0;
-  const totalCount = monitors?.length ?? 0;
+  const downCount    = monitors?.filter(m => m.status === 'down').length    ?? 0;
+  const totalCount   = monitors?.length ?? 0;
 
   return (
-    <motion.div 
-      className="max-w-6xl w-full space-y-6"
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-    >
+    <motion.div className="max-w-6xl w-full space-y-6" variants={containerVariants} initial="hidden" animate="show">
+
+      {/* ── Header ── */}
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1">Metrics</h1>
-          <p className="text-sm text-muted-foreground">System telemetry and active routing targets.</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-white mb-1">Metrics</h1>
+          <p className="text-sm" style={{ color: `${accent}88` }}>System telemetry and active routing targets.</p>
         </div>
-        <div className="flex gap-2">
-          <Link href="/monitors/new">
-            <Button className="font-medium h-9 text-xs">
-              <Plus className="w-3.5 h-3.5 mr-1" /> Add Target
-            </Button>
-          </Link>
-        </div>
+        <Link href="/monitors/new">
+          <button
+            className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium"
+            style={{ backgroundColor: accent, color: base, boxShadow: `0 8px 24px ${accent}44` }}
+          >
+            <Plus className="w-3.5 h-3.5" /> Add Target
+          </button>
+        </Link>
       </motion.div>
 
+      {/* ── Stat cards ── */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-surface border-border-subtle rounded-md shadow-none">
-          <CardHeader className="pb-2 p-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground tracking-wide uppercase flex justify-between">
-              Monitored Nodes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-3xl font-semibold text-foreground tracking-tight">{totalCount}</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-surface border-border-subtle rounded-md shadow-none relative overflow-hidden">
-          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-emerald-500/50" />
-          <CardHeader className="pb-2 p-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground tracking-wide uppercase flex justify-between">
-              Passing
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-3xl font-semibold text-emerald-500 tracking-tight">
-              {healthyCount}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-surface border-border-subtle rounded-md shadow-none relative overflow-hidden">
-          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-red-500/50" />
-          <CardHeader className="pb-2 p-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground tracking-wide uppercase flex justify-between">
-              Failing
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-3xl font-semibold text-red-500 tracking-tight">
-              {downCount}
-            </p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'Monitored Nodes', value: totalCount,   color: accent    },
+          { label: 'Passing',         value: healthyCount, color: '#34D399' },
+          { label: 'Failing',         value: downCount,    color: '#F87171' },
+        ].map(({ label, value, color }) => (
+          <div key={label} className="rounded-2xl border p-5 relative overflow-hidden"
+            style={{ borderColor: `${accent}44`, backgroundColor: `${panel}99`, boxShadow: `0 8px 30px ${base}66, inset 0 1px 0 rgba(255,255,255,0.08)` }}>
+            <div className="absolute left-0 top-0 bottom-0 w-0.5 rounded-l-full" style={{ backgroundColor: color }} />
+            <p className="text-[11px] tracking-[0.2em] mb-2" style={{ color: `${accent}88` }}>{label.toUpperCase()}</p>
+            <p className="text-3xl font-bold font-mono" style={{ color }}>{value}</p>
+          </div>
+        ))}
       </motion.div>
 
+      {/* ── Recent pings ── */}
       <motion.div variants={itemVariants}>
-        <div className="border border-border-subtle rounded-md bg-background overflow-hidden mt-6">
-          <div className="border-b border-border-subtle bg-surface/50 px-4 py-3 flex items-center justify-between">
-            <h3 className="text-sm font-medium text-foreground">Recent Pings</h3>
-            <span className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">View all</span>
+        <div className="rounded-2xl border overflow-hidden"
+          style={{ borderColor: `${accent}44`, backgroundColor: `${panel}88`, boxShadow: `0 16px 50px ${base}88, inset 0 1px 0 rgba(255,255,255,0.07)` }}>
+          <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${accent}22` }}>
+            <h3 className="text-sm font-semibold text-white">Recent Pings</h3>
+            <span className="text-xs cursor-pointer hover:underline" style={{ color: `${accent}88` }}>View all</span>
           </div>
-          
+
           {!monitors || monitors.length === 0 ? (
-            <div className="text-center py-12 px-4 bg-surface/20">
-              <p className="text-sm text-foreground bg-surface border border-border-subtle rounded px-2 py-1 inline-block mb-3">0 configurations found</p>
-              <p className="text-xs text-muted-foreground">Use the CLI or UI to attach a target endpoint.</p>
+            <div className="text-center py-16 px-6">
+              <div className="w-12 h-12 rounded-2xl border flex items-center justify-center mx-auto mb-4"
+                style={{ borderColor: `${accent}33`, backgroundColor: `${panel}88` }}>
+                <TerminalSquare className="w-5 h-5" style={{ color: `${accent}88` }} />
+              </div>
+              <p className="text-sm font-medium text-white mb-1">No monitors yet</p>
+              <p className="text-xs mb-4" style={{ color: `${accent}66` }}>Attach a target endpoint to start tracking.</p>
+              <Link href="/monitors/new">
+                <button className="rounded-xl px-4 py-2 text-xs font-medium"
+                  style={{ backgroundColor: accent, color: base }}>
+                  Create your first monitor
+                </button>
+              </Link>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-border-subtle hover:bg-transparent">
-                    <TableHead className="text-xs font-medium text-muted-foreground uppercase py-2">Target</TableHead>
-                    <TableHead className="text-xs font-medium text-muted-foreground uppercase py-2">State</TableHead>
-                    <TableHead className="text-xs font-medium text-muted-foreground uppercase py-2">Window</TableHead>
-                    <TableHead className="text-xs font-medium text-muted-foreground uppercase py-2 whitespace-nowrap">Last Event</TableHead>
+                  <TableRow className="border-0 hover:bg-transparent">
+                    {['Target', 'State', 'Window', 'Last Event'].map(h => (
+                      <TableHead key={h} className="text-[11px] font-medium tracking-[0.18em] py-3"
+                        style={{ color: `${accent}77` }}>{h.toUpperCase()}</TableHead>
+                    ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {monitors.slice(0, 5).map((monitor) => (
-                    <TableRow key={monitor.id} className="border-border-subtle hover:bg-surface/50 transition-colors">
-                      <TableCell className="font-medium text-sm text-foreground py-2.5">
+                  {monitors.slice(0, 5).map((monitor: Monitor) => (
+                    <TableRow key={monitor.id} className="border-0 transition-colors"
+                      style={{ borderTop: `1px solid ${accent}18` }}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = `${panel}60`)}
+                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
+                      <TableCell className="py-3 text-sm font-medium text-white">
                         <span className="flex items-center gap-2">
-                          <span className={`w-1.5 h-1.5 rounded-full ${monitor.status === 'healthy' ? 'bg-emerald-500' : monitor.status === 'down' ? 'bg-red-500' : 'bg-yellow-500'}`} />
+                          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{
+                            backgroundColor: monitor.status === 'healthy' ? '#34D399' : monitor.status === 'down' ? '#F87171' : '#FBBF24',
+                            boxShadow: monitor.status === 'healthy' ? '0 0 6px #34D399' : monitor.status === 'down' ? '0 0 6px #F87171' : '0 0 6px #FBBF24',
+                          }} />
                           {monitor.name}
                         </span>
                       </TableCell>
-                      <TableCell className="py-2.5">
-                        {monitor.status === 'healthy' && <span className="text-xs text-emerald-500 font-mono">OK</span>}
-                        {monitor.status === 'down' && <span className="text-xs text-red-500 font-mono">ERR</span>}
-                        {monitor.status === 'late' && <span className="text-xs text-yellow-500 font-mono">WAIT</span>}
+                      <TableCell className="py-3 font-mono text-xs">
+                        {monitor.status === 'healthy' && <span style={{ color: '#34D399' }}>OK</span>}
+                        {monitor.status === 'down'    && <span style={{ color: '#F87171' }}>ERR</span>}
+                        {monitor.status === 'late'    && <span style={{ color: '#FBBF24' }}>WAIT</span>}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground py-2.5 font-mono">
-                        {monitor.interval_minutes}m
+                      <TableCell className="py-3 font-mono text-xs" style={{ color: `${accent}77` }}>
+                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{monitor.interval_minutes}m</span>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground py-2.5 font-mono">
-                        {monitor.last_ping_at ? new Date(monitor.last_ping_at).toLocaleTimeString([], { hour12: false }) : '--:--:--'}
+                      <TableCell className="py-3 font-mono text-xs" style={{ color: `${accent}77` }}>
+                        {monitor.last_ping_at
+                          ? new Date(monitor.last_ping_at).toLocaleTimeString([], { hour12: false })
+                          : '--:--:--'}
                       </TableCell>
                     </TableRow>
                   ))}
