@@ -110,10 +110,7 @@ export default function ResetPasswordPage() {
             backdropFilter: 'blur(20px)',
           }}>
             <CardHeader className="pb-4" style={{ borderBottom: `1px solid ${accent}15` }}>
-              <CardTitle className="text-2xl font-bold text-white">New password</CardTitle>
-              <CardDescription className="font-mono text-sm" style={{ color: `${accent}80` }}>
-                {'>'} choose a strong password
-              </CardDescription>
+              <CardTitle className="text-2xl font-bold text-white text-center">New password</CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-5 pt-6">
@@ -143,9 +140,6 @@ export default function ResetPasswordPage() {
                   maxLength={128} autoComplete="new-password"
                   className="h-11 font-mono text-white placeholder:text-gray-600"
                   style={{ background: 'rgba(0,0,0,0.5)', borderColor: `${accent}25` }} />
-                <p className="text-xs font-mono" style={{ color: `${accent}50` }}>
-                  {'// '} min 8 chars · one uppercase · one number
-                </p>
               </div>
 
               <div className="space-y-2">
@@ -163,14 +157,10 @@ export default function ResetPasswordPage() {
                 className="w-full h-11 font-mono font-bold text-black transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ background: accent, boxShadow: `0 0 25px ${accent}40` }}
                 onClick={handleUpdate} disabled={loading || done}>
-                {loading ? '$ updating...' : '$ set_new_password'}
+                {loading ? 'Processing...' : 'Confirm'}
               </Button>
             </CardContent>
           </Card>
-
-          <p className="text-center font-mono text-xs mt-4" style={{ color: `${accent}40` }}>
-            // theme: {theme.name}
-          </p>
         </motion.div>
       </div>
     </div>

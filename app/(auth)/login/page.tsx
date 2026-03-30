@@ -102,7 +102,7 @@ export default function LoginPage() {
             backdropFilter: 'blur(20px)',
           }}>
             <CardHeader className="pb-4" style={{ borderBottom: `1px solid ${accent}15` }}>
-              <CardTitle className="text-2xl font-bold text-white" text-center>Welcome back</CardTitle>
+              <CardTitle className="text-2xl font-bold text-white text-center">Welcome back</CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-5 pt-6">
@@ -152,7 +152,7 @@ export default function LoginPage() {
                 className="w-full h-11 font-mono font-bold text-black transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ background: accent, boxShadow: `0 0 25px ${accent}40` }}
                 onClick={handleLogin} disabled={loading}>
-                {loading ? 'Processing...' : '$ Sign In'}
+                {loading ? 'Processing...' : 'Sign In'}
               </Button>
 
               <div className="pt-4 text-center" style={{ borderTop: `1px solid ${accent}15` }}>

@@ -336,7 +336,7 @@ export default function HeroAnimation() {
         <div ref={buttonsRef} className="flex gap-4 justify-center mb-6">
           <a href="/signup">
             <button className="font-mono bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-3 rounded-lg text-base transition-all hover:scale-110 active:scale-95 hover:shadow-[0_0_30px_rgba(0,255,70,0.5)]">
-              $ start --free
+              Start Free
             </button>
           </a>
           <a href="/login">

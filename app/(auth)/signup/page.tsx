@@ -214,16 +214,13 @@ export default function SignupPage() {
                         maxLength={128} autoComplete="new-password"
                         className="h-11 font-mono text-white placeholder:text-gray-600"
                         style={{ background: 'rgba(0,0,0,0.5)', borderColor: `${accent}25` }} />
-                      <p className="text-xs font-mono" style={{ color: `${accent}50` }}>
-                        {'// '} min 8 chars · one uppercase · one number
-                      </p>
                     </div>
 
                     <Button
                       className="w-full h-11 font-mono font-bold text-black transition-all hover:scale-[1.02] active:scale-[0.98]"
                       style={{ background: accent, boxShadow: `0 0 25px ${accent}40` }}
                       onClick={handleSignup} disabled={loading}>
-                      {loading ? '$ creating_account...' : '$ create_account --free'}
+                      {loading ? 'Processing...' : 'Create Account'}
                     </Button>
 
                     <div className="pt-4 text-center" style={{ borderTop: `1px solid ${accent}15` }}>

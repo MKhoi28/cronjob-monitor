@@ -120,7 +120,7 @@ export default function PricingPage() {
               Simple, honest pricing
             </h1>
             <p className="text-white/60 font-mono text-sm">
-              {'>'} Start free. Upgrade when you need more.
+              Start free. Upgrade when you need more.
             </p>
 
             {/* Frequency toggle */}
