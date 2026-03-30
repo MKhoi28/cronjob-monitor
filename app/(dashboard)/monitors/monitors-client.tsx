@@ -19,7 +19,17 @@ const itemVariants: any = {
   show: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } }
 };
 
-export default function MonitorsClient({ monitors }: { monitors: Monitor[] }) {
+// ✅ New — accepts all three props
+export default function MonitorsClient({
+  monitors,
+  monitorCount,
+  monitorLimit,
+}: {
+  monitors: Monitor[]
+  monitorCount: number
+  monitorLimit: number
+}) {
+
   const theme = useAppTheme();
   const [base, panel] = theme.palette;
   const accent        = theme.accent;

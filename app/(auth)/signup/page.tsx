@@ -180,7 +180,7 @@ export default function SignupPage() {
                   backdropFilter: 'blur(20px)',
                 }}>
                   <CardHeader className="pb-4" style={{ borderBottom: `1px solid ${accent}15` }}>
-                    <CardTitle className="text-2xl font-bold text-white">Create account</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-white text-center">Create Account</CardTitle>
                     <CardDescription className="font-mono text-sm" style={{ color: `${accent}80` }}>
                       {'>'} start monitoring for free
                     </CardDescription>

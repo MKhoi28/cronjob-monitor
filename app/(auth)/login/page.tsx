@@ -102,7 +102,7 @@ export default function LoginPage() {
             backdropFilter: 'blur(20px)',
           }}>
             <CardHeader className="pb-4" style={{ borderBottom: `1px solid ${accent}15` }}>
-              <CardTitle className="text-2xl font-bold text-white" align = "center">Welcome back</CardTitle>
+              <CardTitle className="text-2xl font-bold text-white" text-center>Welcome back</CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-5 pt-6">
