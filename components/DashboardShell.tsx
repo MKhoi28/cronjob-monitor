@@ -9,7 +9,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { usePersistedTheme } from '@/hooks/usePersistedTheme'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -36,7 +35,7 @@ interface DashboardShellProps {
 }
 
 export default function DashboardShell({ sidebar, children }: DashboardShellProps) {
-  const [activeTheme, setActiveTheme]   = usePersistedTheme()  // persisted across all pages
+  const [activeTheme, setActiveTheme]   = useState(0)
   const [hoveredTheme, setHoveredTheme] = useState<number | null>(null)
 
   // ── Settings panel (bottom of sidebar) ──────────────────────────────────
@@ -53,13 +52,36 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
   const orbThreeRef   = useRef<HTMLDivElement>(null)
 
   const router   = useRouter()
-  const supabase = createClient()
 
   const displayIndex = hoveredTheme !== null ? hoveredTheme : activeTheme
   const theme        = useMemo(() => THEMES[displayIndex], [displayIndex])
   const [base, panel, edge] = theme.palette
   const accent = theme.accent
 
+
+  // Hydrate theme from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('cw-theme')
+      if (saved !== null) {
+        const idx = Number(saved)
+        if (idx >= 0 && idx < THEMES.length) setActiveTheme(idx)
+      }
+    } catch {}
+  }, [])
+  // Read saved theme on mount so landing page matches dashboard choice
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('cw-theme')
+      if (saved !== null) {
+        const idx = Number(saved)
+        if (idx >= 0 && idx < THEMES.length) {
+          setActiveTheme(idx)
+          setHoveredTheme(null)
+        }
+      }
+    } catch {}
+  }, [])
   // ── Open settings panel, anchor above the button ────────────────────────
   const handleOpenSettings = () => {
     if (!settingsOpen && settingsBtnRef.current) {
@@ -105,8 +127,12 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
     return () => window.removeEventListener('resize', reposition)
   }, [settingsOpen])
 
-  // ── Sign out ────────────────────────────────────────────────────────────
+  // ── Sign out ─────────────────────────────────────────────────────────────
+  // createClient is created *inside* the handler — not at component top level.
+  // Instantiating it on render triggers an automatic session-refresh fetch
+  // which throws "Failed to fetch" in dev when Supabase isn't immediately ready.
   async function handleSignOut() {
+    const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/')
     router.refresh()
@@ -166,6 +192,8 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
     setActiveTheme(index)
     setHoveredTheme(null)
     setThemeDropOpen(false)
+    // persist so landing page and all app pages share the same choice
+    try { localStorage.setItem('cw-theme', String(index)) } catch {}
   }
 
   return (
@@ -420,6 +448,22 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
                     </svg>
                     Settings
                   </button>
+
+                  {/* Theme swatch circle (the circle in the sketch) */}
+                  <button
+                    type="button"
+                    onClick={handleOpenSettings}
+                    className="shrink-0 rounded-full border"
+                    style={{
+                      width:           32,
+                      height:          32,
+                      backgroundColor: accent,
+                      borderColor:     `${accent}66`,
+                      boxShadow:       `0 0 10px ${accent}66`,
+                      transition:      'all 280ms ease',
+                    }}
+                    title={`Theme: ${THEMES[activeTheme].name}`}
+                  />
                 </div>
               </aside>
             )}

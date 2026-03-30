@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { BadgeCheck, ArrowRight } from "lucide-react"
+import { BadgeCheck, ArrowRight, Loader2 } from "lucide-react"
 import NumberFlow from "@number-flow/react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -21,12 +21,21 @@ export interface PricingTier {
 interface PricingCardProps {
   tier: PricingTier
   paymentFrequency: string
+  /** Called when the CTA button is clicked. Omit for the free tier. */
+  onCtaClick?: () => void | Promise<void>
 }
 
-export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
-  const price = tier.price[paymentFrequency]
+export function PricingCard({ tier, paymentFrequency, onCtaClick }: PricingCardProps) {
+  const [loading, setLoading] = React.useState(false)
+  const price        = tier.price[paymentFrequency]
   const isHighlighted = tier.highlighted
-  const isPopular = tier.popular
+  const isPopular     = tier.popular
+
+  async function handleClick() {
+    if (!onCtaClick) return
+    setLoading(true)
+    try { await onCtaClick() } finally { setLoading(false) }
+  }
 
   return (
     <Card className={cn(
@@ -52,7 +61,7 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
               value={price}
               className="text-4xl font-medium"
             />
-            <p className="-mt-2 text-xs text-muted-foreground">Per month/user</p>
+            <p className="-mt-2 text-xs text-muted-foreground">Per month</p>
           </>
         ) : (
           <h1 className="text-4xl font-medium">{price}</h1>
@@ -62,21 +71,29 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
       <div className="flex-1 space-y-2">
         <h3 className="text-sm font-medium">{tier.description}</h3>
         <ul className="space-y-2">
-          {tier.features.map((feature, index) => (
-            <li key={index} className={cn(
+          {tier.features.map((feature, i) => (
+            <li key={i} className={cn(
               "flex items-center gap-2 text-sm font-medium",
               isHighlighted ? "text-background" : "text-muted-foreground"
             )}>
-              <BadgeCheck className="h-4 w-4" />
+              <BadgeCheck className="h-4 w-4 shrink-0" />
               {feature}
             </li>
           ))}
         </ul>
       </div>
 
-      <Button variant={isHighlighted ? "secondary" : "default"} className="w-full">
-        {tier.cta}
-        <ArrowRight className="ml-2 h-4 w-4" />
+      <Button
+        variant={isHighlighted ? "secondary" : "default"}
+        className="w-full"
+        onClick={onCtaClick ? handleClick : undefined}
+        disabled={loading}
+      >
+        {loading ? (
+          <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Redirecting…</>
+        ) : (
+          <>{tier.cta}<ArrowRight className="ml-2 h-4 w-4" /></>
+        )}
       </Button>
     </Card>
   )
