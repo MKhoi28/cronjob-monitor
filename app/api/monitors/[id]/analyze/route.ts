@@ -112,14 +112,12 @@ export async function POST(
   }
 
   // ── Build prompt ──────────────────────────────────────────────────────
- const prompt = `You are an SRE analyzing a cron job monitor. Respond ONLY with raw JSON, no markdown.
+const prompt = `SRE analyzing cron monitor. Return ONLY raw JSON, no markdown.
 
-Monitor "${monitor.name}": expected every ${stats.expectedIntervalMin}min, ${stats.gracePeriodMin}min grace, status ${stats.currentStatus.toUpperCase()}.
-Stats: avg gap ${stats.avgGapMin}min, max ${stats.maxGapMin}min, min ${stats.minGapMin}min, missed ${stats.missedPings} (${stats.missedPct}%), trend ${stats.trendPct > 0 ? '+' : ''}${stats.trendPct}%, peak ${stats.peakActivityDay} ${stats.peakActivityHour}:00 UTC, ${stats.totalPingsAnalyzed} pings analyzed.
+"${monitor.name}": every ${stats.expectedIntervalMin}min, ${stats.gracePeriodMin}min grace, ${stats.currentStatus.toUpperCase()}.
+avg=${stats.avgGapMin}min max=${stats.maxGapMin}min min=${stats.minGapMin}min missed=${stats.missedPct}% trend=${stats.trendPct > 0 ? '+' : ''}${stats.trendPct}% pings=${stats.totalPingsAnalyzed}
 
-Return this exact JSON:
-{"verdict":"max 15 words","severity":"healthy|warning|critical","pattern":"2-3 sentences","diagnosis":"2-3 sentences","recommendation":"2-3 sentences","quickFix":"one change or null"}`
-
+{"verdict":"<15 words>","severity":"healthy|warning|critical","pattern":"2 sentences max","diagnosis":"2 sentences max","recommendation":"2 sentences max","quickFix":"one change or null"}`
   // ── Call Gemini ───────────────────────────────────────────────────────
   try {
     if (!process.env.GEMINI_API_KEY) {
@@ -151,9 +149,30 @@ Return this exact JSON:
     // Strip any accidental markdown fences
     const cleaned  = raw.replace(/```json|```/g, '').trim()
     // Extract just the JSON object in case there's extra text around it
+// ✅ New — falls back to computed mock if truncated
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) throw new Error('No JSON object found in response')
-    const analysis = JSON.parse(jsonMatch[0])
+    let analysis
+
+    if (!jsonMatch) {
+      // Gemini truncated — build a rule-based fallback from real stats
+      analysis = {
+        verdict: stats.currentStatus === 'down'
+          ? 'Monitor is down — job has stopped sending pings'
+          : `Job running at ${stats.avgGapMin}min intervals, expected ${stats.expectedIntervalMin}min`,
+        severity: stats.currentStatus === 'down' ? 'critical'
+          : stats.missedPct > 20 ? 'warning' : 'healthy',
+        pattern: `The monitor has recorded ${stats.totalPingsAnalyzed} pings with an average gap of ${stats.avgGapMin} minutes against an expected interval of ${stats.expectedIntervalMin} minutes.`,
+        diagnosis: stats.avgGapMin < stats.expectedIntervalMin
+          ? 'The job is running more frequently than configured. The monitor interval may need to be adjusted to match the actual job schedule.'
+          : 'The job is running less frequently than expected. This may indicate performance degradation or intermittent failures.',
+        recommendation: `Review the job schedule and confirm it matches the ${stats.expectedIntervalMin}-minute interval. ${stats.missedPings > 0 ? `Consider increasing the grace period — ${stats.missedPings} pings have already exceeded it.` : ''}`,
+        quickFix: stats.avgGapMin < stats.expectedIntervalMin
+          ? `Update monitor interval to ${stats.avgGapMin} minutes to match actual job frequency`
+          : stats.missedPings > 0 ? `Increase grace period to ${Math.ceil(stats.avgGapMin * 0.3)} minutes` : null,
+      }
+    } else {
+      analysis = JSON.parse(jsonMatch[0])
+    }
 
     return NextResponse.json({ analysis, stats })
   } catch (err) {

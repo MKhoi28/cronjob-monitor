@@ -24,6 +24,11 @@ export async function proxy(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
+    // In your middleware, add this condition:
+  if (pathname.startsWith('/status') || pathname.startsWith('/api/badge')) {
+    return NextResponse.next()
+  }
+
   // Chưa login → chặn dashboard
   if (!user && pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url))
@@ -38,5 +43,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/signup'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }
+
+const publicRoutes = ['/', '/login', '/signup', '/forgot-password', '/reset-password', '/status']

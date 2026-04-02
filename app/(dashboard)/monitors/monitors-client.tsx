@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Clock, Plus, Search, TerminalSquare, Zap } from "lucide-react";
+import { Clock, Plus, Search, TerminalSquare, Zap, ExternalLink } from "lucide-react";
 import { useAppTheme } from "@/components/DashboardShell";
 import AnalyzeModal from "@/components/AnalyzeModal";
 
@@ -34,6 +34,8 @@ export default function MonitorsClient({
   const accent        = theme.accent;
   const [search, setSearch] = useState("");
 
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+
   // AI Analyst state
   const [analyzingMonitor, setAnalyzingMonitor] = useState<Monitor | null>(null)
 
@@ -42,6 +44,14 @@ export default function MonitorsClient({
   const filteredMonitors = monitors?.filter(m =>
     m.name.toLowerCase().includes(search.toLowerCase())
   ) || [];
+
+  function copyBadge(monitorId: string) {
+    const url = `${window.location.origin}/status/${monitorId}`
+    const badge = `[![monitor status](${window.location.origin}/api/badge/${monitorId})](${url})`
+    navigator.clipboard.writeText(badge)
+    setCopiedId(monitorId)
+    setTimeout(() => setCopiedId(null), 2000)
+  }
 
   return (
     <>
@@ -189,6 +199,29 @@ export default function MonitorsClient({
                                 Analyze
                               </button>
                             )}
+
+                            <button
+                              onClick={() => copyBadge(monitor.id)}
+                               className="flex items-center gap-1 text-xs font-mono font-medium px-2 py-1 rounded-lg border transition-all hover:scale-105"
+                               style={{
+                                color:           copiedId === monitor.id ? '#34D399' : `${accent}66`,
+                                borderColor:     copiedId === monitor.id ? 'rgba(52,211,153,0.3)' : `${accent}18`,
+                                backgroundColor: copiedId === monitor.id ? 'rgba(52,211,153,0.08)' : 'transparent',
+                              }}
+                              title="Copy badge markdown"
+                              >
+                              {copiedId === monitor.id ? '✓ copied' : '⬡ badge'}
+                            </button>
+
+                            <a
+                              href={`/status/${monitor.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-medium hover:underline flex items-center gap-0.5"
+                              style={{ color: `${accent}66` }}
+                              >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
 
                             <Link
                               href={`/monitors/${monitor.id}/edit`}

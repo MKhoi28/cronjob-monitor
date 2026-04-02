@@ -73,7 +73,8 @@ export default function NewMonitorPage() {
       setError('Failed to create monitor. Please try again.')
       setLoading(false)
     } else {
-      router.push('/dashboard')
+        router.refresh()
+        router.push('/monitors')
     }
   }
 

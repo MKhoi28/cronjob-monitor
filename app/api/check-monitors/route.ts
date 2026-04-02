@@ -9,7 +9,7 @@ const supabase = createClient(
 )
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-// Timing-safe string comparison to prevent timing attacks
+// ── Timing-safe string comparison ─────────────────────────────────────────
 function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false
   let result = 0
@@ -19,24 +19,28 @@ function timingSafeEqual(a: string, b: string): boolean {
   return result === 0
 }
 
+// ── Escape user-controlled strings before inserting into HTML email ───────
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 export async function GET(request: NextRequest) {
-  // ---- Rate limiting ----
-  // This endpoint should only be hit by Vercel Cron
-  // Extra protection against abuse
-  const ip = getIP(request)
+  // ── Rate limiting ──────────────────────────────────────────────────────
+  const ip    = getIP(request)
   const limit = rateLimit(`check-monitors:${ip}`, {
-    limit: 10,
+    limit:    10,
     windowMs: 60 * 1000,
   })
-
   if (!limit.success) {
-    return NextResponse.json(
-      { error: 'Too many requests' },
-      { status: 429 }
-    )
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
 
-  // ---- Auth check (timing-safe) ----
+  // ── Auth check (timing-safe) ───────────────────────────────────────────
   const authHeader = request.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
 
@@ -45,11 +49,7 @@ export async function GET(request: NextRequest) {
     !cronSecret ||
     !timingSafeEqual(authHeader, `Bearer ${cronSecret}`)
   ) {
-    // Generic error — don't reveal whether secret exists
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    )
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const now = new Date()
@@ -73,12 +73,11 @@ export async function GET(request: NextRequest) {
 
   for (const monitor of monitors) {
     try {
-      const lastPing = new Date(monitor.last_ping_at)
+      const lastPing   = new Date(monitor.last_ping_at)
       const expectedBy = new Date(
         lastPing.getTime() +
         (monitor.interval_minutes + monitor.grace_minutes) * 60 * 1000
       )
-
       const isLate = now > expectedBy
 
       if (isLate && monitor.status !== 'down') {
@@ -87,17 +86,21 @@ export async function GET(request: NextRequest) {
           .update({ status: 'down' })
           .eq('id', monitor.id)
 
+        // ── Escape all user-controlled values before HTML insertion ────
+        const safeName  = escapeHtml(monitor.name)
+        const safeEmail = escapeHtml(monitor.alert_email)
+
         await resend.emails.send({
-          from: 'alerts@yourdomain.com',
-          to: monitor.alert_email,
-          subject: `🚨 Monitor "${monitor.name}" has missed its ping`,
+          from:    'alerts@yourdomain.com',
+          to:      safeEmail,
+          subject: `🚨 Monitor "${safeName}" has missed its ping`,
           html: `
-            <h2>Alert: ${monitor.name} is down</h2>
-            <p>Your cron job hasn't pinged in over
+            <h2>Alert: ${safeName} is down</h2>
+            <p>Your cron job hasn&#39;t pinged in over
             <strong>${monitor.interval_minutes + monitor.grace_minutes} minutes</strong>.</p>
             <p>Last seen: ${lastPing.toUTCString()}</p>
             <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">
-              View your dashboard →
+              View your dashboard &rarr;
             </a></p>
           `,
         })
@@ -105,14 +108,13 @@ export async function GET(request: NextRequest) {
         alertsSent++
       }
     } catch (err) {
-      // Log but don't stop processing other monitors
       console.error(`[check-monitors] Failed for monitor ${monitor.id}:`, err)
     }
   }
 
   return NextResponse.json({
-    ok: true,
-    checked: monitors.length,
+    ok:         true,
+    checked:    monitors.length,
     alertsSent,
   })
 }
