@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { Zap, Check, ArrowLeft, Lock } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Zap, Check, ArrowLeft, Lock, Clock } from 'lucide-react'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import { THEMES, ThemePicker } from '@/components/ThemeChooserBar'
 import { usePersistedTheme } from '@/hooks/usePersistedTheme'
@@ -24,30 +24,29 @@ const FREE_FEATURES = [
   '7-day ping history',
 ]
 
+// Payments launch date
+const LAUNCH_DATE = new Date('2026-05-28')
+
+function daysUntilLaunch() {
+  const diff = LAUNCH_DATE.getTime() - Date.now()
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
+}
+
 export default function UpgradeWallPage() {
   const [activeTheme, setActiveTheme] = usePersistedTheme()
   const [previewTheme, setPreviewTheme] = useState<number | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [showComingSoon, setShowComingSoon] = useState(false)
   const router = useRouter()
 
   const theme  = THEMES[previewTheme ?? activeTheme]
   const accent = theme.accent
   const base   = theme.palette[0]
   const panel  = theme.palette[1]
+  const days   = daysUntilLaunch()
 
-  async function handleUpgrade() {
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetch('/api/stripe/checkout', { method: 'POST' })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to start checkout')
-      window.location.href = data.url
-    } catch (err: any) {
-      setError(err.message)
-      setLoading(false)
-    }
+  function handleUpgrade() {
+    setShowComingSoon(true)
+    setTimeout(() => setShowComingSoon(false), 3500)
   }
 
   return (
@@ -81,6 +80,30 @@ export default function UpgradeWallPage() {
         <ArrowLeft className="w-3 h-3" />
         back to monitors
       </Link>
+
+      {/* Coming soon toast */}
+      <AnimatePresence>
+        {showComingSoon && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0,   scale: 1    }}
+            exit={{    opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-5 py-3 rounded-2xl border font-mono text-sm"
+            style={{
+              background:   `rgba(0,0,0,0.88)`,
+              borderColor:  `${accent}55`,
+              color:        accent,
+              backdropFilter: 'blur(16px)',
+              boxShadow:    `0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px ${accent}22`,
+            }}
+          >
+            <Clock className="w-4 h-4 shrink-0" />
+            <span>
+              Pro launching in <strong>{days} days</strong> — May 28 🚀
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-16">
         <motion.div
@@ -117,14 +140,12 @@ export default function UpgradeWallPage() {
               className="px-8 py-5 flex items-center gap-4"
               style={{ borderBottom: `1px solid ${accent}18`, background: `${accent}08` }}
             >
-              {/* Lock icon */}
               <div
                 className="w-11 h-11 rounded-xl border flex items-center justify-center shrink-0"
                 style={{ borderColor: `${accent}40`, backgroundColor: `${accent}12` }}
               >
                 <Lock className="w-5 h-5" style={{ color: accent }} />
               </div>
-
               <div>
                 <h1 className="text-lg font-bold text-white leading-tight">
                   You've reached your free plan limit
@@ -148,16 +169,13 @@ export default function UpgradeWallPage() {
 
               {/* Comparison */}
               <div className="grid grid-cols-2 gap-3">
-
                 {/* Free column */}
                 <div
                   className="rounded-xl border p-4 space-y-3"
                   style={{ borderColor: `${accent}18`, background: `${accent}05` }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-bold text-white/40 uppercase tracking-widest">
-                      Free
-                    </span>
+                    <span className="text-xs font-mono font-bold text-white/40 uppercase tracking-widest">Free</span>
                     <span
                       className="text-[10px] font-mono px-2 py-0.5 rounded-full border"
                       style={{ borderColor: `${accent}20`, color: `${accent}55` }}
@@ -180,27 +198,18 @@ export default function UpgradeWallPage() {
                   className="rounded-xl border p-4 space-y-3 relative overflow-hidden"
                   style={{ borderColor: `${accent}50`, background: `${accent}0c` }}
                 >
-                  {/* Subtle glow top-right */}
                   <div
                     className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl pointer-events-none"
                     style={{ backgroundColor: `${accent}18` }}
                   />
                   <div className="flex items-center justify-between">
-                    <span
-                      className="text-xs font-mono font-bold uppercase tracking-widest"
-                      style={{ color: accent }}
-                    >
-                      Pro
-                    </span>
+                    <span className="text-xs font-mono font-bold uppercase tracking-widest" style={{ color: accent }}>Pro</span>
                     <Zap className="w-3.5 h-3.5" style={{ color: accent }} />
                   </div>
                   <ul className="space-y-2">
                     {PRO_FEATURES.map((f) => (
                       <li key={f} className="flex items-start gap-2">
-                        <Check
-                          className="w-3.5 h-3.5 mt-0.5 shrink-0"
-                          style={{ color: accent }}
-                        />
+                        <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: accent }} />
                         <span className="text-xs font-mono text-white/80 leading-snug">{f}</span>
                       </li>
                     ))}
@@ -208,26 +217,13 @@ export default function UpgradeWallPage() {
                 </div>
               </div>
 
-              {/* Error */}
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="rounded-lg border p-3"
-                  style={{ background: 'rgba(255,50,50,0.08)', borderColor: 'rgba(255,50,50,0.3)' }}
-                >
-                  <p className="text-red-400 text-xs font-mono">✗ {error}</p>
-                </motion.div>
-              )}
-
               {/* CTA */}
               <div className="space-y-3">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleUpgrade}
-                  disabled={loading}
-                  className="w-full h-12 rounded-xl font-mono font-bold text-sm flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full h-12 rounded-xl font-mono font-bold text-sm flex items-center justify-center gap-2 cursor-pointer"
                   style={{
                     backgroundColor: accent,
                     color:           base,
@@ -235,8 +231,13 @@ export default function UpgradeWallPage() {
                   }}
                 >
                   <Zap className="w-4 h-4" />
-                  {loading ? '$ connecting...' : '$ upgrade_to_pro'}
+                  $ upgrade_to_pro
                 </motion.button>
+
+                {/* Coming soon badge under button */}
+                <p className="text-center text-[10px] font-mono" style={{ color: `${accent}44` }}>
+                  // pro launches May 28 · {days} days away
+                </p>
 
                 <Link
                   href="/monitors"

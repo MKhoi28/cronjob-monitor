@@ -1,4 +1,4 @@
-  'use client'
+'use client'
 
   import { useEffect, useMemo, useRef, useState } from 'react'
   import { gsap } from 'gsap'
@@ -378,9 +378,61 @@
             </div>
 
             {/* Logo */}
-            <Link href="/" className="text-lg font-semibold tracking-wide">
+            <Link
+              href="/"
+              className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold tracking-wide"
+            >
               CronWatch
             </Link>
+            {/* ── Right nav links ── */}
+            <div className="reveal-nav flex items-center gap-1">
+              {[
+                { label: 'About',   href: '/about'   },
+                { label: 'Pricing', href: '/pricing' },
+              ].map(({ label, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className="rounded-xl px-3.5 py-2 text-sm font-medium"
+                  style={{
+                    color:           'rgba(255,255,255,0.62)',
+                    transition:      'color 180ms ease, background-color 180ms ease',
+                    backgroundColor: 'transparent',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.95)'
+                    ;(e.currentTarget as HTMLAnchorElement).style.backgroundColor = `${accent}18`
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.62)'
+                    ;(e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent'
+                  }}
+                >
+                  {label}
+                </Link>
+              ))}
+              <Link
+                href="/signup"
+                className="ml-2 rounded-xl border px-4 py-2 text-sm font-medium"
+                style={{
+                  borderColor:     `${accent}88`,
+                  backgroundColor: `${accent}18`,
+                  color:           accent,
+                  transition:      'all 180ms ease',
+                  boxShadow:       `0 0 0 0 ${accent}00`,
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = `${accent}30`
+                  ;(e.currentTarget as HTMLAnchorElement).style.boxShadow = `0 4px 18px ${accent}44`
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.backgroundColor = `${accent}18`
+                  ;(e.currentTarget as HTMLAnchorElement).style.boxShadow = `0 0 0 0 ${accent}00`
+                }}
+              >
+                Get Started
+              </Link>
+            </div>
           </nav>
 
           {/* ── Hero ── */}
@@ -392,35 +444,20 @@
             </div>
 
             <h1 className="mx-auto max-w-5xl text-4xl font-bold leading-[1.08] md:text-7xl">
-              <span className="hero-word inline-block">CronWatch</span>{' '}
-              <span className="hero-word inline-block">never sleeps.</span>{' '}
-              <br />
-              <span className="hero-word inline-block">So</span>{' '}
-              <span className="hero-word inline-block">you can.</span>
+              <span className="hero-word inline-block">
+                The only cron monitor that tells you <u>why</u> your job failed
+              </span>
             </h1>
+
+            <p className="hero-subline mt-8 md:mt-10 max-w-2xl mx-auto text-sm md:text-base text-muted-foreground">
+              CronWatch watches your cron jobs 24/7 and uses AI to diagnose failures —
+              not just alert you that something went wrong.
+            </p>
 
             <div className="mx-auto mt-7 flex max-w-2xl flex-wrap items-center justify-center gap-3">
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>12,800 JOBS TRACKED</div>
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>42ms ALERT LATENCY</div>
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>GLOBAL COVERAGE</div>
-            </div>
-
-            <div className="hero-subline mt-9 flex justify-center gap-4">
-              <Link
-                href="/signup"
-                className="relative overflow-hidden rounded-xl px-6 py-3 text-sm font-medium"
-                style={{ backgroundColor: accent, color: '#F8F8F8', boxShadow: `0 14px 34px ${accent}55`, transition: 'transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 180ms ease-out' }}
-              >
-                <span className="cta-glow-sweep absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.48) 50%, transparent 100%)' }} />
-                Start Monitoring
-              </Link>
-              <Link
-                href="/login"
-                className="rounded-xl border px-6 py-3 text-sm font-medium"
-                style={{ borderColor: `${accent}AA`, backgroundColor: `${panel}AA`, transition: 'transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 180ms ease-out' }}
-              >
-                Sign In
-              </Link>
             </div>
 
             <div ref={heroVisualRef} className="hero-visual-layer mouse-parallax-soft mx-auto mt-12 max-w-4xl">
@@ -441,24 +478,36 @@
             </div>
           </section>
 
-          {/* ── Metrics ── */}
-          <section
-            ref={metricsRef}
-            className="relative mt-8 overflow-hidden rounded-3xl border p-8 md:p-12"
-            style={{ borderColor: `${accent}8F`, backgroundColor: `${panel}AA`, boxShadow: `0 20px 80px ${base}A6, inset 0 1px 0 rgba(255,255,255,0.12)`, transformStyle: 'preserve-3d' }}
-          >
-            <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full blur-[70px]" style={{ background: `${accent}52` }} />
-            <p className="relative text-xs tracking-[0.24em]" style={{ color: '#CACACA' }}>THEME DNA</p>
-            <div className="relative mt-4 grid items-end gap-6 md:grid-cols-[1.2fr_1fr]">
-              <h2 className="text-3xl font-semibold leading-tight md:text-5xl">{theme.name} with deliberate depth, contrast, and motion hierarchy.</h2>
-              <div className="space-y-3 rounded-2xl border p-5" style={{ borderColor: `${accent}78`, backgroundColor: `${base}8F` }}>
-                <p className="text-sm" style={{ color: '#D6D6D6' }}>Current mood: {theme.mood}</p>
-                <div className="flex gap-2">
-                  {theme.palette.map((color) => (
-                    <span key={color} className="h-8 w-8 rounded-lg border" style={{ backgroundColor: color, borderColor: 'rgba(255,255,255,0.14)' }} />
-                  ))}
-                  <span className="h-8 w-8 rounded-lg border" style={{ backgroundColor: accent, borderColor: 'rgba(255,255,255,0.14)' }} />
-                </div>
+
+          {/* ── Features / Three Pillars ── */}
+          <section className="mx-auto max-w-7xl px-6 md:px-10 mt-16">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              <div className="rounded-xl border border-border-subtle bg-surface p-6">
+                <div className="text-2xl mb-3">⚡</div>
+                <h3 className="font-semibold text-foreground mb-2">AI Failure Analyst</h3>
+                <p className="text-sm text-muted-foreground">
+                  When a job misses a ping, our AI reads the ping history and tells you
+                  exactly what went wrong and how to fix it. No competitor does this.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-border-subtle bg-surface p-6">
+                <div className="text-2xl mb-3">🔔</div>
+                <h3 className="font-semibold text-foreground mb-2">Instant Alerts</h3>
+                <p className="text-sm text-muted-foreground">
+                  Email alerts the moment your job misses its window.
+                  Configurable grace periods so you only get alerted when it matters.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-border-subtle bg-surface p-6">
+                <div className="text-2xl mb-3">📊</div>
+                <h3 className="font-semibold text-foreground mb-2">Public Status Badges</h3>
+                <p className="text-sm text-muted-foreground">
+                  Embed live status badges in your GitHub README.
+                  Show the world your jobs are healthy.
+                </p>
               </div>
             </div>
           </section>
