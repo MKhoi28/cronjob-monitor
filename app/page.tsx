@@ -378,12 +378,10 @@
             </div>
 
             {/* Logo */}
-            <Link
-              href="/"
-              className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold tracking-wide"
-            >
+            <Link href="/" className="text-lg font-semibold tracking-wide">
               CronWatch
             </Link>
+
             {/* ── Right nav links ── */}
             <div className="reveal-nav flex items-center gap-1">
               {[
@@ -460,6 +458,24 @@
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>GLOBAL COVERAGE</div>
             </div>
 
+            <div className="hero-subline mt-9 flex justify-center gap-4">
+              <Link
+                href="/signup"
+                className="relative overflow-hidden rounded-xl px-6 py-3 text-sm font-medium"
+                style={{ backgroundColor: accent, color: '#F8F8F8', boxShadow: `0 14px 34px ${accent}55`, transition: 'transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 180ms ease-out' }}
+              >
+                <span className="cta-glow-sweep absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.48) 50%, transparent 100%)' }} />
+                Start Monitoring
+              </Link>
+              <Link
+                href="/login"
+                className="rounded-xl border px-6 py-3 text-sm font-medium"
+                style={{ borderColor: `${accent}AA`, backgroundColor: `${panel}AA`, transition: 'transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 180ms ease-out' }}
+              >
+                Sign In
+              </Link>
+            </div>
+
             <div ref={heroVisualRef} className="hero-visual-layer mouse-parallax-soft mx-auto mt-12 max-w-4xl">
               <div className="relative overflow-hidden rounded-[28px] border p-3 md:p-4" style={{ borderColor: `${accent}A0`, backgroundColor: `${panel}C6`, boxShadow: `0 30px 90px ${base}99, 0 10px 30px ${accent}33`, transformStyle: 'preserve-3d' }}>
                 <div className="hero-portal-spin absolute left-1/2 top-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed" style={{ borderColor: `${accent}57` }} />
@@ -511,6 +527,329 @@
               </div>
             </div>
           </section>
+
+          {/* ── Section 2: How It Works ── */}
+          <section className="mx-auto max-w-7xl px-6 md:px-10 mt-32 mb-24">
+            <div className="text-center mb-16">
+              <p style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.25em', color: accent, opacity: 0.7, marginBottom: '0.75rem' }}>◈ HOW IT WORKS</p>
+              <h2 className="text-3xl md:text-5xl font-bold" style={{ letterSpacing: '-0.02em' }}>
+                Dead simple to integrate.<br />
+                <span style={{ color: accent }}>Impossibly smart to analyze.</span>
+              </h2>
+            </div>
+
+            {/* Step 1 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center mb-28">
+              {/* Left: Visual */}
+              <div className="relative">
+                <div
+                  className="rounded-2xl border p-8"
+                  style={{ borderColor: `${accent}30`, background: `${panel}88`, boxShadow: `0 20px 60px ${base}88, 0 0 0 1px ${accent}10` }}
+                >
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: accent, opacity: 0.5, marginBottom: '1rem', letterSpacing: '0.15em' }}>STEP 01 — INTEGRATE</div>
+                  <div
+                    className="rounded-xl p-4"
+                    style={{ background: 'rgba(0,0,0,0.5)', border: `1px solid ${accent}18` }}
+                  >
+                    <div className="flex gap-1.5 mb-3">
+                      {['#ff5f57','#febc2e','#28c840'].map(c => (
+                        <span key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c, display: 'inline-block' }} />
+                      ))}
+                    </div>
+                    <div style={{ fontFamily: 'monospace', fontSize: '0.78rem', lineHeight: 1.9 }}>
+                      <div style={{ color: 'rgba(255,255,255,0.3)' }}># At the end of your cron script</div>
+                      <div><span style={{ color: accent }}>curl</span><span style={{ color: 'rgba(255,255,255,0.7)' }}> https://cronwatch.app/api/ping/</span><span style={{ color: accent }}>{'{'}<span style={{ color: '#f97316' }}>your-id</span>{'}'}</span></div>
+                      <div style={{ color: 'rgba(255,255,255,0.3)', marginTop: '0.5rem' }}># That's literally it.</div>
+                    </div>
+                  </div>
+                  <div
+                    className="mt-4 rounded-xl px-4 py-3 flex items-center gap-3"
+                    style={{ background: `${accent}10`, border: `1px solid ${accent}22` }}
+                  >
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840', boxShadow: '0 0 8px #28c840', flexShrink: 0 }} />
+                    <span style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>Ping received — 200 OK — 12ms</span>
+                  </div>
+                </div>
+                {/* Glow */}
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '60%', height: '60%', background: `radial-gradient(circle, ${accent}18 0%, transparent 70%)`, pointerEvents: 'none', zIndex: -1 }} />
+              </div>
+
+              {/* Right: Text */}
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '2.5rem', fontWeight: 700, color: `${accent}18`, lineHeight: 1, marginBottom: '0.5rem' }}>01</div>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ letterSpacing: '-0.01em' }}>
+                  One HTTP call.<br />Zero configuration.
+                </h3>
+                <p className="text-sm md:text-base mb-6" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.8 }}>
+                  Add a single <code style={{ background: `${accent}18`, color: accent, padding: '1px 6px', borderRadius: 4, fontFamily: 'monospace' }}>curl</code> command to the end of any cron script. No SDKs, no agents, no YAML. CronWatch starts watching immediately.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {['Any language', 'Any scheduler', 'Any cloud'].map(tag => (
+                    <span key={tag} style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.1em', padding: '4px 10px', border: `1px solid ${accent}30`, color: `${accent}88`, borderRadius: 6 }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 — reversed */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center mb-28">
+              {/* Left: Text */}
+              <div className="md:order-1 order-2">
+                <div style={{ fontFamily: 'monospace', fontSize: '2.5rem', fontWeight: 700, color: `${accent}18`, lineHeight: 1, marginBottom: '0.5rem' }}>02</div>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ letterSpacing: '-0.01em' }}>
+                  Miss a ping?<br />We know in 60 seconds.
+                </h3>
+                <p className="text-sm md:text-base mb-6" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.8 }}>
+                  CronWatch checks every monitor every minute. The moment your job goes silent past its expected window, an alert fires — with context, not just a timestamp.
+                </p>
+                <div
+                  className="rounded-xl p-4"
+                  style={{ background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.2)' }}
+                >
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'rgba(248,113,113,0.8)', marginBottom: '0.25rem', letterSpacing: '0.1em' }}>⚠ ALERT TRIGGERED</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>
+                    <div>Monitor: <span style={{ color: 'rgba(255,255,255,0.7)' }}>daily-backup-job</span></div>
+                    <div>Expected ping at: <span style={{ color: 'rgba(255,255,255,0.7)' }}>03:00 UTC</span></div>
+                    <div>Last seen: <span style={{ color: 'rgba(248,113,113,0.8)' }}>47 minutes ago</span></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Visual */}
+              <div className="md:order-2 order-1 relative">
+                <div
+                  className="rounded-2xl border p-8"
+                  style={{ borderColor: `${accent}30`, background: `${panel}88`, boxShadow: `0 20px 60px ${base}88` }}
+                >
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: accent, opacity: 0.5, marginBottom: '1.25rem', letterSpacing: '0.15em' }}>STEP 02 — DETECT</div>
+                  {/* Timeline bars */}
+                  <div className="space-y-3">
+                    {[
+                      { label: 'Mon 03:00', ok: true },
+                      { label: 'Tue 03:00', ok: true },
+                      { label: 'Wed 03:00', ok: true },
+                      { label: 'Thu 03:00', ok: false },
+                      { label: 'Fri 03:00', ok: false },
+                    ].map((row, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <span style={{ fontFamily: 'monospace', fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', width: 68, flexShrink: 0 }}>{row.label}</span>
+                        <div style={{ flex: 1, height: 8, borderRadius: 4, background: row.ok ? accent : 'rgba(248,113,113,0.7)', opacity: row.ok ? 0.8 : 1, boxShadow: row.ok ? `0 0 8px ${accent}44` : '0 0 8px rgba(248,113,113,0.4)' }} />
+                        <span style={{ fontFamily: 'monospace', fontSize: '0.6rem', color: row.ok ? accent : 'rgba(248,113,113,0.8)', width: 20, flexShrink: 0 }}>{row.ok ? '✓' : '✗'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '60%', height: '60%', background: `radial-gradient(circle, ${accent}12 0%, transparent 70%)`, pointerEvents: 'none', zIndex: -1 }} />
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
+              {/* Left: Visual */}
+              <div className="relative">
+                <div
+                  className="rounded-2xl border p-8"
+                  style={{ borderColor: `${accent}30`, background: `${panel}88`, boxShadow: `0 20px 60px ${base}88` }}
+                >
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: accent, opacity: 0.5, marginBottom: '1.25rem', letterSpacing: '0.15em' }}>STEP 03 — DIAGNOSE</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: `${accent}66`, marginBottom: '0.5rem', letterSpacing: '0.1em' }}>AI VERDICT</div>
+                  <div
+                    className="rounded-xl p-4 mb-3"
+                    style={{ background: `${accent}0E`, border: `1px solid ${accent}25` }}
+                  >
+                    <div style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: accent, fontWeight: 700, marginBottom: '0.5rem' }}>
+                      Job degrading — avg gap increased 340% over 14 days
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
+                      Peak failures cluster Thursday–Friday UTC nights, suggesting a resource contention issue with concurrent batch jobs. Recommend staggering execution by 20 minutes.
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    {['warning', 'trending up', 'resource contention'].map(tag => (
+                      <span key={tag} style={{ fontFamily: 'monospace', fontSize: '0.6rem', padding: '2px 8px', border: `1px solid ${accent}25`, color: `${accent}66`, borderRadius: 4 }}>{tag}</span>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '60%', height: '60%', background: `radial-gradient(circle, ${accent}14 0%, transparent 70%)`, pointerEvents: 'none', zIndex: -1 }} />
+              </div>
+
+              {/* Right: Text */}
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '2.5rem', fontWeight: 700, color: `${accent}18`, lineHeight: 1, marginBottom: '0.5rem' }}>03</div>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ letterSpacing: '-0.01em' }}>
+                  Not just an alert.<br />
+                  <span style={{ color: accent }}>An actual diagnosis.</span>
+                </h3>
+                <p className="text-sm md:text-base mb-4" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.8 }}>
+                  Click Analyze on any monitor. Our AI reads your entire ping history, computes 7 statistical metrics, and returns a plain-English verdict — severity, pattern, root cause, and a concrete fix.
+                </p>
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.28)', lineHeight: 1.7, fontFamily: 'monospace' }}>
+                  // No competitor offers this at any price point.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* ── Section 3: Social Proof / Comparison ── */}
+          <section className="mx-auto max-w-7xl px-6 md:px-10 mt-16 mb-24">
+            <div
+              className="rounded-2xl border p-8 md:p-12"
+              style={{ borderColor: `${accent}20`, background: `${panel}55`, position: 'relative', overflow: 'hidden' }}
+            >
+              {/* Background accent */}
+              <div style={{ position: 'absolute', top: '-30%', right: '-10%', width: '40%', height: '80%', background: `radial-gradient(circle, ${accent}0C 0%, transparent 70%)`, pointerEvents: 'none' }} />
+
+              <div className="text-center mb-10">
+                <p style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.25em', color: accent, opacity: 0.7, marginBottom: '0.75rem' }}>◈ WHY CRONWATCH</p>
+                <h2 className="text-2xl md:text-4xl font-bold" style={{ letterSpacing: '-0.01em' }}>
+                  Every competitor tells you <em>that</em> it broke.<br />
+                  <span style={{ color: accent }}>Only CronWatch tells you why.</span>
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { name: 'Healthchecks.io', price: 'Free / $20+', ai: false, badge: false, themes: false },
+                  { name: 'Cronitor',         price: '$21+/mo',     ai: false, badge: true,  themes: false },
+                  { name: 'CronWatch',        price: 'Free / $9/mo', ai: true,  badge: true,  themes: true,  highlight: true },
+                ].map((row) => (
+                  <div
+                    key={row.name}
+                    className="rounded-xl p-5"
+                    style={{
+                      border: `1px solid ${row.highlight ? accent : `${accent}18`}`,
+                      background: row.highlight ? `${accent}10` : 'rgba(0,0,0,0.2)',
+                      position: 'relative',
+                    }}
+                  >
+                    {row.highlight && (
+                      <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', fontFamily: 'monospace', fontSize: '0.6rem', letterSpacing: '0.15em', color: base, background: accent, padding: '2px 10px', borderRadius: 20 }}>YOU ARE HERE</div>
+                    )}
+                    <div style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.85rem', color: row.highlight ? accent : 'rgba(255,255,255,0.6)', marginBottom: '0.25rem' }}>{row.name}</div>
+                    <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', marginBottom: '1rem' }}>{row.price}</div>
+                    <div className="space-y-2">
+                      {[
+                        { label: 'AI Failure Analyst', val: row.ai },
+                        { label: 'Status Badges',      val: row.badge },
+                        { label: 'Multi-theme UI',     val: row.themes },
+                        { label: 'Instant Alerts',     val: true },
+                      ].map(f => (
+                        <div key={f.label} className="flex items-center gap-2">
+                          <span style={{ fontSize: '0.7rem', color: f.val ? accent : 'rgba(255,255,255,0.2)', flexShrink: 0 }}>{f.val ? '✓' : '✗'}</span>
+                          <span style={{ fontFamily: 'monospace', fontSize: '0.68rem', color: f.val ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.25)' }}>{f.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ── Section 4: CTA Banner ── */}
+          <section className="mx-auto max-w-7xl px-6 md:px-10 mt-16 mb-16">
+            <div
+              className="rounded-2xl p-10 md:p-16 text-center relative overflow-hidden"
+              style={{ background: `linear-gradient(135deg, ${panel}CC 0%, ${base}FF 100%)`, border: `1px solid ${accent}28` }}
+            >
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '60%', height: '120%', background: `radial-gradient(circle, ${accent}12 0%, transparent 65%)`, pointerEvents: 'none' }} />
+              <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.25em', color: accent, opacity: 0.7, marginBottom: '1.25rem' }}>◈ GET STARTED TODAY</div>
+              <h2 className="text-3xl md:text-5xl font-bold mb-4" style={{ letterSpacing: '-0.02em' }}>
+                Your first 10 monitors<br />
+                <span style={{ color: accent }}>are free. Forever.</span>
+              </h2>
+              <p className="text-sm md:text-base mb-8 mx-auto max-w-lg" style={{ color: 'rgba(255,255,255,0.4)', lineHeight: 1.8 }}>
+                No credit card. No trial expiry. Just paste one line into your cron script and start sleeping better at night.
+              </p>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <a
+                  href="/signup"
+                  className="relative overflow-hidden rounded-xl px-8 py-3.5 text-sm font-semibold"
+                  style={{ backgroundColor: accent, color: base, boxShadow: `0 14px 34px ${accent}44`, transition: 'all 180ms ease' }}
+                >
+                  Start Monitoring Free →
+                </a>
+                <a
+                  href="/about"
+                  className="rounded-xl border px-8 py-3.5 text-sm font-medium"
+                  style={{ borderColor: `${accent}44`, color: 'rgba(255,255,255,0.6)', transition: 'all 180ms ease' }}
+                >
+                  Learn More
+                </a>
+              </div>
+            </div>
+          </section>
+
+          {/* ── Footer ── */}
+          <footer
+            className="mx-auto max-w-7xl px-6 md:px-10 py-12"
+            style={{ borderTop: `1px solid ${accent}14`, marginTop: '2rem' }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+              {/* Brand */}
+              <div>
+                <div style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '1rem', color: accent, marginBottom: '0.75rem', letterSpacing: '0.05em' }}>CRONWATCH</div>
+                <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.8, maxWidth: 240 }}>
+                  AI-powered cron job monitoring. Know when your jobs fail — and exactly why.
+                </p>
+              </div>
+
+              {/* Links */}
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.25)', marginBottom: '1rem' }}>PRODUCT</div>
+                <div className="space-y-2">
+                  {[
+                    { label: 'About',   href: '/about'   },
+                    { label: 'Pricing', href: '/pricing' },
+                    { label: 'Dashboard', href: '/dashboard' },
+                  ].map(({ label, href }) => (
+                    <div key={label}>
+                      <a href={href} style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', transition: 'color 160ms ease' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = accent)}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
+                      >{label}</a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Legal + Contact */}
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.25)', marginBottom: '1rem' }}>LEGAL & CONTACT</div>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Terms of Service', href: '/terms'   },
+                    { label: 'Privacy Policy',   href: '/privacy' },
+                    { label: 'Cookie Policy',    href: '/cookies' },
+                  ].map(({ label, href }) => (
+                    <div key={label}>
+                      <a href={href} style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', transition: 'color 160ms ease' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = accent)}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
+                      >{label}</a>
+                    </div>
+                  ))}
+                  <div>
+                    <a
+                      href="mailto:duongmkhoi.cronwatch@gmail.com"
+                      style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: accent, opacity: 0.7, textDecoration: 'none', transition: 'opacity 160ms ease' }}
+                      onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                      onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+                    >
+                      Contact Us ↗
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom bar */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-6" style={{ borderTop: `1px solid ${accent}0E` }}>
+              <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.06em' }}>CRONWATCH © 2026 — Built by MKhoi28</span>
+              <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.06em' }}>// theme: {theme.name}</span>
+            </div>
+          </footer>
+
         </div>
 
         <style jsx>{`

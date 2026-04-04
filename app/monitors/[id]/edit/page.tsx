@@ -165,16 +165,13 @@ export default function EditMonitorPage() {
             {/* Header */}
             <div className="px-8 py-5" style={{ borderBottom: `1px solid ${accent}18`, background: `${accent}08` }}>
               <h1 className="text-lg font-bold text-white">Edit Monitor</h1>
-              <p className="text-xs font-mono mt-0.5" style={{ color: `${accent}66` }}>
-                // {id?.slice(0, 16)}...
-              </p>
             </div>
 
             {/* Body */}
             <div className="px-8 py-7 space-y-5">
               {loading ? (
-                <p className="text-center font-mono text-sm" style={{ color: `${accent}66` }}>
-                  $ loading monitor...
+                <p className="text-center font-mono text-sm" style={{ color: `${accent}66 ` }}>
+                  Loading monitor...
                 </p>
               ) : (
                 <>
@@ -254,7 +251,7 @@ export default function EditMonitorPage() {
                       style={{ backgroundColor: accent, color: base, boxShadow: `0 0 24px ${accent}44` }}
                     >
                       <Save className="w-4 h-4" />
-                      {saving ? '$ saving...' : '$ save_changes'}
+                      {saving ? 'Saving...' : 'Save changes'}
                     </motion.button>
 
                     <motion.button
@@ -264,23 +261,19 @@ export default function EditMonitorPage() {
                       disabled={deleting}
                       className="w-full h-10 rounded-xl font-mono text-xs flex items-center justify-center gap-2 border transition-colors disabled:opacity-50"
                       style={{
-                        borderColor: confirmDelete ? 'rgba(248,113,113,0.6)' : `${accent}20`,
-                        color:       confirmDelete ? '#f87171' : `${accent}55`,
+                        borderColor: confirmDelete ? 'rgba(248,113,113,0.6)' : `${accent}80`,
+                        color:       confirmDelete ? '#f87171' : `${accent}100`,
                         background:  confirmDelete ? 'rgba(248,113,113,0.08)' : 'transparent',
                       }}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      {deleting ? 'deleting...' : confirmDelete ? 'click again to confirm delete' : 'delete monitor'}
+                      {deleting ? 'Deleting...' : confirmDelete ? 'click again to confirm delete' : 'delete monitor'}
                     </motion.button>
                   </div>
                 </>
               )}
             </div>
           </div>
-
-          <p className="text-center font-mono text-xs mt-4" style={{ color: `${accent}30` }}>
-            // theme: {theme.name}
-          </p>
         </motion.div>
       </div>
     </div>
