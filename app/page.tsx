@@ -458,24 +458,6 @@
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>GLOBAL COVERAGE</div>
             </div>
 
-            <div className="hero-subline mt-9 flex justify-center gap-4">
-              <Link
-                href="/signup"
-                className="relative overflow-hidden rounded-xl px-6 py-3 text-sm font-medium"
-                style={{ backgroundColor: accent, color: '#F8F8F8', boxShadow: `0 14px 34px ${accent}55`, transition: 'transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 180ms ease-out' }}
-              >
-                <span className="cta-glow-sweep absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.48) 50%, transparent 100%)' }} />
-                Start Monitoring
-              </Link>
-              <Link
-                href="/login"
-                className="rounded-xl border px-6 py-3 text-sm font-medium"
-                style={{ borderColor: `${accent}AA`, backgroundColor: `${panel}AA`, transition: 'transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 180ms ease-out' }}
-              >
-                Sign In
-              </Link>
-            </div>
-
             <div ref={heroVisualRef} className="hero-visual-layer mouse-parallax-soft mx-auto mt-12 max-w-4xl">
               <div className="relative overflow-hidden rounded-[28px] border p-3 md:p-4" style={{ borderColor: `${accent}A0`, backgroundColor: `${panel}C6`, boxShadow: `0 30px 90px ${base}99, 0 10px 30px ${accent}33`, transformStyle: 'preserve-3d' }}>
                 <div className="hero-portal-spin absolute left-1/2 top-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed" style={{ borderColor: `${accent}57` }} />
