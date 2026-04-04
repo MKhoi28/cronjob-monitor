@@ -829,7 +829,7 @@
 
             {/* Bottom bar */}
             <div className="flex flex-wrap items-center justify-between gap-4 pt-6" style={{ borderTop: `1px solid ${accent}0E` }}>
-              <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.06em' }}>CRONWATCH © 2026 — Built by MKhoi28</span>
+              <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.06em' }}>CRONWATCH © 2026</span>
             </div>
           </footer>
 

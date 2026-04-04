@@ -17,8 +17,8 @@ const THEMES: Theme[] = [
 const STEPS = [
   { num: '01', title: 'Create a Monitor',   body: 'Name your cron job, set the expected ping interval, and CronWatch generates a unique endpoint URL for it.',                                              code: 'POST /api/monitor/create' },
   { num: '02', title: 'Ping After Each Run', body: 'At the end of your cron script, fire a single GET or POST to your endpoint. That\'s the entire integration.',                                        code: 'GET /api/ping/{your-id}' },
-  { num: '03', title: 'CronWatch Watches',   body: 'A background job runs every 60 seconds checking for overdue monitors. If a ping is late, it fires an alert pipeline immediately.',                   code: '// checker runs every 60s' },
-  { num: '04', title: 'AI Diagnoses',        body: 'Open the AI Analyst on any monitor to get a machine-generated diagnosis of failure patterns — not just raw timestamps.',                             code: '// verdict in < 3s' },
+  { num: '03', title: 'CronWatch Watches',   body: 'A background job runs every 60 seconds checking for overdue monitors. If a ping is late, it fires an alert pipeline immediately.',                   code: 'Checker runs every 60s' },
+  { num: '04', title: 'AI Diagnoses',        body: 'Open the AI Analyst on any monitor to get a machine-generated diagnosis of failure patterns — not just raw timestamps.',                             code: 'Verdict in < 10s' },
 ]
 
 const FEATURES = [
@@ -177,10 +177,10 @@ export default function AboutPage() {
                 {['#ff5f57','#febc2e','#28c840'].map(c => <span key={c} style={{ width: 9, height: 9, borderRadius: '50%', background: c, display: 'inline-block' }} />)}
               </div>
               {[
-                { text: '$ initializing cronwatch...', delay: 0 },
-                { text: '$ loading monitor registry', delay: 300 },
-                { text: '$ AI analyst: ready', delay: 600 },
-                { text: '$ all systems operational ✓', delay: 900 },
+                { text: 'Initializing cronwatch...', delay: 0 },
+                { text: 'Loading monitor registry', delay: 300 },
+                { text: 'AI analyst: ready', delay: 600 },
+                { text: 'All systems operational ✓', delay: 900 },
               ].map(({ text, delay }) => (
                 <TerminalLine key={text} text={text} delay={delay} accent={accent} />
               ))}
