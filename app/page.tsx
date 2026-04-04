@@ -378,10 +378,12 @@
             </div>
 
             {/* Logo */}
-            <Link href="/" className="text-lg font-semibold tracking-wide">
+            <Link
+              href="/"
+              className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold tracking-wide"
+            >
               CronWatch
             </Link>
-
             {/* ── Right nav links ── */}
             <div className="reveal-nav flex items-center gap-1">
               {[
@@ -828,7 +830,6 @@
             {/* Bottom bar */}
             <div className="flex flex-wrap items-center justify-between gap-4 pt-6" style={{ borderTop: `1px solid ${accent}0E` }}>
               <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.06em' }}>CRONWATCH © 2026 — Built by MKhoi28</span>
-              <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.06em' }}>// theme: {theme.name}</span>
             </div>
           </footer>
 

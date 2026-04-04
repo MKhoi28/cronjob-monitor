@@ -75,7 +75,7 @@ function SectionLabel({ label, accent }: { label: string; accent: string }) {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 style={{ fontFamily: '"Syne", sans-serif', fontWeight: 800, fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', color: 'rgba(255,255,255,0.92)', lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '3rem' }}>
+    <h2 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 800, fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', color: 'rgba(255,255,255,0.92)', lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '3rem' }}>
       {children}
     </h2>
   )
@@ -120,8 +120,8 @@ export default function AboutPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:none } }
         @keyframes blink  { 0%,100%{opacity:1} 50%{opacity:0} }
         .about-nav-link:hover { color: rgba(255,255,255,0.95) !important; background: rgba(255,255,255,0.06) !important; }
@@ -163,11 +163,11 @@ export default function AboutPage() {
           {/* ── HERO ── */}
           <section style={{ padding: '7rem 0 5rem', textAlign: 'center', animation: 'fadeUp 0.8s ease both' }}>
             <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.25em', color: accent, opacity: 0.65, marginBottom: '1.25rem' }}>◈ ABOUT CRONWATCH</div>
-            <h1 style={{ fontFamily: '"Syne", sans-serif', fontWeight: 800, fontSize: 'clamp(2.6rem, 6vw, 5rem)', lineHeight: 1.06, letterSpacing: '-0.02em', color: 'rgba(255,255,255,0.94)', marginBottom: '1.5rem' }}>
+            <h1 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 800, fontSize: 'clamp(2.6rem, 6vw, 5rem)', lineHeight: 1.06, letterSpacing: '-0.02em', color: 'rgba(255,255,255,0.94)', marginBottom: '1.5rem' }}>
               Your cron jobs deserve<br />
               <span style={{ color: accent }}>to be watched.</span>
             </h1>
-            <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.45)', maxWidth: '520px', margin: '0 auto 2.5rem', lineHeight: 1.8 }}>
+            <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '1.05rem', color: 'rgba(255,255,255,0.45)', maxWidth: '520px', margin: '0 auto 2.5rem', lineHeight: 1.8 }}>
               CronWatch is a lightweight, AI-powered monitoring tool built for developers who ship fast and can't afford silent failures.
             </p>
 
@@ -198,8 +198,8 @@ export default function AboutPage() {
                 {STEPS.map((s, i) => (
                   <div key={i} className="step-card" style={{ background: base, padding: '1.75rem', transition: 'all 0.2s', border: '1px solid transparent', cursor: 'default' }}>
                     <div style={{ fontFamily: 'monospace', fontSize: '2.2rem', fontWeight: 700, color: `${accent}22`, marginBottom: '0.75rem', lineHeight: 1 }}>{s.num}</div>
-                    <h3 style={{ fontFamily: '"Syne", sans-serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(255,255,255,0.88)', marginBottom: '0.6rem' }}>{s.title}</h3>
-                    <p style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, marginBottom: '1rem' }}>{s.body}</p>
+                    <h3 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(255,255,255,0.88)', marginBottom: '0.6rem' }}>{s.title}</h3>
+                    <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '0.83rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, marginBottom: '1rem' }}>{s.body}</p>
                     <code style={{ fontFamily: 'monospace', fontSize: '0.68rem', color: accent, opacity: 0.6, background: `${accent}0F`, padding: '0.3rem 0.6rem', display: 'inline-block', borderRadius: '4px' }}>{s.code}</code>
                   </div>
                 ))}
@@ -218,8 +218,8 @@ export default function AboutPage() {
                 {FEATURES.map((f, i) => (
                   <div key={i} className="feat-card" style={{ background: base, padding: '1.75rem', transition: 'background 0.2s' }}>
                     <div className="feat-icon" style={{ fontSize: '1.4rem', marginBottom: '0.75rem', display: 'inline-block', transition: 'transform 0.2s' }}>{f.icon}</div>
-                    <h3 style={{ fontFamily: '"Syne", sans-serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(255,255,255,0.88)', marginBottom: '0.5rem' }}>{f.title}</h3>
-                    <p style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.75 }}>{f.desc}</p>
+                    <h3 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(255,255,255,0.88)', marginBottom: '0.5rem' }}>{f.title}</h3>
+                    <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '0.83rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.75 }}>{f.desc}</p>
                   </div>
                 ))}
               </div>
@@ -237,7 +237,7 @@ export default function AboutPage() {
                 {STACK.map((item, i) => (
                   <div key={i} className="stack-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.4rem', borderBottom: i < STACK.length - 1 ? `1px solid ${accent}0E` : 'none', transition: 'background 0.15s' }}>
                     <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.28)', letterSpacing: '0.12em' }}>{item.label.toUpperCase()}</span>
-                    <span style={{ fontFamily: '"Syne", sans-serif', fontWeight: 600, fontSize: '0.88rem', color: 'rgba(255,255,255,0.75)' }}>{item.value}</span>
+                    <span style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 600, fontSize: '0.88rem', color: 'rgba(255,255,255,0.75)' }}>{item.value}</span>
                   </div>
                 ))}
               </div>
@@ -250,12 +250,12 @@ export default function AboutPage() {
               <SectionLabel label="THE MISSION" accent={accent} />
               <SectionTitle>Why CronWatch exists.</SectionTitle>
               <blockquote style={{ borderLeft: `2px solid ${accent}44`, padding: '1.25rem 1.5rem', textAlign: 'left', background: `${accent}06`, marginBottom: '2rem', borderRadius: '0 6px 6px 0' }}>
-                <p style={{ fontFamily: '"Syne", sans-serif', fontSize: '1rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.85, fontStyle: 'italic' }}>
+                <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '1rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.85, fontStyle: 'italic' }}>
                   "I built CronWatch because I kept waking up to silent failures. Scheduled jobs would miss their window, data pipelines would stall, and nothing would tell me — until a user did. I wanted a tool that's dead simple to integrate but smart enough to explain what went wrong."
                 </p>
                 <footer style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.85rem', letterSpacing: '0.12em' }}>— MKHOI28, FOUNDER</footer>
               </blockquote>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.85 }}>
+              <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '0.9rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.85 }}>
                 CronWatch is a solo side project built with a zero-budget constraint and a commercial ambition. Every design decision favors developer simplicity over feature bloat. The AI layer isn't a gimmick — it's the reason this tool exists.
               </p>
             </section>
@@ -265,10 +265,10 @@ export default function AboutPage() {
           <RevealSection delay={100}>
             <section style={{ padding: '5rem 0 7rem', textAlign: 'center' }}>
               <SectionLabel label="GET STARTED FREE" accent={accent} />
-              <h2 style={{ fontFamily: '"Syne", sans-serif', fontWeight: 800, fontSize: 'clamp(2rem, 4.5vw, 3.2rem)', color: 'rgba(255,255,255,0.92)', lineHeight: 1.1, marginBottom: '0.75rem' }}>
+              <h2 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 800, fontSize: 'clamp(2rem, 4.5vw, 3.2rem)', color: 'rgba(255,255,255,0.92)', lineHeight: 1.1, marginBottom: '0.75rem' }}>
                 Start monitoring in<br /><span style={{ color: accent }}>under 60 seconds.</span>
               </h2>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.32)', marginBottom: '2.25rem' }}>Free tier · No credit card · 10 monitors included</p>
+              <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '0.9rem', color: 'rgba(255,255,255,0.32)', marginBottom: '2.25rem' }}>Free tier · No credit card · 10 monitors included</p>
               <div style={{ display: 'flex', gap: '0.85rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href="/signup" className="about-cta-primary" style={{ fontFamily: 'monospace', fontSize: '0.75rem', letterSpacing: '0.1em', padding: '0.8rem 1.9rem', background: `${accent}22`, border: `1px solid ${accent}66`, color: accent, textDecoration: 'none', borderRadius: '8px', transition: 'all 0.2s', display: 'inline-block' }}>
                   CREATE FREE ACCOUNT →

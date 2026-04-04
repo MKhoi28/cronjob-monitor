@@ -26,7 +26,7 @@ const TIERS: PricingTier[] = [
   },
   {
     name:        'Pro',
-    price:       { monthly: 9, yearly: 6 },
+    price:       { monthly: 14.99, yearly: 115.99 },
     description: 'For teams and production workloads.',
     features: [
       'Unlimited monitors',
