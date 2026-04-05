@@ -181,9 +181,6 @@ export default function SignupPage() {
                 }}>
                   <CardHeader className="pb-4" style={{ borderBottom: `1px solid ${accent}15` }}>
                     <CardTitle className="text-2xl font-bold text-white text-center">Create Account</CardTitle>
-                    <CardDescription className="font-mono text-sm" style={{ color: `${accent}80` }}>
-                      {'>'} start monitoring for free
-                    </CardDescription>
                   </CardHeader>
 
                   <CardContent className="space-y-5 pt-6">
@@ -235,10 +232,6 @@ export default function SignupPage() {
               </motion.div>
             )}
           </AnimatePresence>
-
-          <p className="text-center font-mono text-xs mt-4" style={{ color: `${accent}40` }}>
-            // theme: {theme.name}
-          </p>
         </motion.div>
       </div>
     </div>

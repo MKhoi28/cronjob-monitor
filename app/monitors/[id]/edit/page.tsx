@@ -250,7 +250,6 @@ export default function EditMonitorPage() {
                       className="w-full h-11 rounded-xl font-mono font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{ backgroundColor: accent, color: base, boxShadow: `0 0 24px ${accent}44` }}
                     >
-                      <Save className="w-4 h-4" />
                       {saving ? 'Saving...' : 'Save changes'}
                     </motion.button>
 
@@ -266,8 +265,7 @@ export default function EditMonitorPage() {
                         background:  confirmDelete ? 'rgba(248,113,113,0.08)' : 'transparent',
                       }}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      {deleting ? 'Deleting...' : confirmDelete ? 'click again to confirm delete' : 'delete monitor'}
+                      {deleting ? 'Deleting...' : confirmDelete ? 'Click again to confirm delete' : 'Delete monitor'}
                     </motion.button>
                   </div>
                 </>
