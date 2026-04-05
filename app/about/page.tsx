@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState, useMemo } from 'react'
 import Link from 'next/link'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { usePersistedTheme } from '@/hooks/usePersistedTheme'
+
+gsap.registerPlugin(ScrollTrigger)
+gsap.config({ nullTargetWarn: false })
 
 type Palette = [string, string, string]
 type Theme = { id: string; name: string; mood: string; palette: Palette; accent: string }
@@ -15,55 +20,31 @@ const THEMES: Theme[] = [
 ]
 
 const STEPS = [
-  { num: '01', title: 'Create a Monitor',   body: 'Name your cron job, set the expected ping interval, and CronWatch generates a unique endpoint URL for it.',                                              code: 'POST /api/monitor/create' },
-  { num: '02', title: 'Ping After Each Run', body: 'At the end of your cron script, fire a single GET or POST to your endpoint. That\'s the entire integration.',                                        code: 'GET /api/ping/{your-id}' },
-  { num: '03', title: 'CronWatch Watches',   body: 'A background job runs every 60 seconds checking for overdue monitors. If a ping is late, it fires an alert pipeline immediately.',                   code: 'Checker runs every 60s' },
-  { num: '04', title: 'AI Diagnoses',        body: 'Open the AI Analyst on any monitor to get a machine-generated diagnosis of failure patterns — not just raw timestamps.',                             code: 'Verdict in < 10s' },
+  { num: '01', title: 'Create a Monitor',    body: 'Name your cron job, set the expected ping interval, and CronWatch generates a unique endpoint URL for it.',                              code: 'POST /api/monitor/create' },
+  { num: '02', title: 'Ping After Each Run', body: "At the end of your cron script, fire a single GET or POST to your endpoint. That's the entire integration.",                            code: 'GET /api/ping/{your-id}'  },
+  { num: '03', title: 'CronWatch Watches',   body: 'A background job runs every 60 seconds checking for overdue monitors. If a ping is late, it fires an alert pipeline immediately.',      code: 'Checker runs every 60s'   },
+  { num: '04', title: 'AI Diagnoses',        body: 'Open the AI Analyst on any monitor to get a machine-generated diagnosis of failure patterns — not just raw timestamps.',                code: 'Verdict in < 10s'         },
 ]
 
 const FEATURES = [
-  { icon: '⚡', title: 'AI Failure Analyst',       desc: 'Claude reads your ping history and gap patterns to surface root causes. No competitor does this.' },
-  { icon: '🔔', title: 'Instant Email Alerts',     desc: 'Powered by Resend. Get notified the moment a job goes silent, with full context of what failed.' },
-  { icon: '◉',  title: 'Real-Time Ping Tracking',  desc: 'Every cron job gets a unique endpoint. Hit it after each run — CronWatch timestamps it instantly.' },
-  { icon: '◧',  title: 'Plan-Based Limits',        desc: 'Free tier: 10 monitors. Pro: unlimited. Enforced at the database level — no client-side tricks.' },
-  { icon: '▣',  title: 'Minimal Integration',      desc: 'One HTTP request. No SDKs, no agents, no config files. Works with any language or scheduler.' },
-  { icon: '◫',  title: 'Missed Run Detection',     desc: 'Define your interval. If a ping doesn\'t arrive on time, CronWatch flags it before your users do.' },
+  { icon: '⚡', title: 'AI Failure Analyst',      desc: 'Claude reads your ping history and gap patterns to surface root causes. No competitor does this.'          },
+  { icon: '🔔', title: 'Instant Email Alerts',    desc: 'Powered by Resend. Get notified the moment a job goes silent, with full context of what failed.'           },
+  { icon: '◉',  title: 'Real-Time Ping Tracking', desc: 'Every cron job gets a unique endpoint. Hit it after each run — CronWatch timestamps it instantly.'         },
+  { icon: '◧',  title: 'Plan-Based Limits',       desc: 'Free tier: 10 monitors. Pro: unlimited. Enforced at the database level — no client-side tricks.'           },
+  { icon: '▣',  title: 'Minimal Integration',     desc: 'One HTTP request. No SDKs, no agents, no config files. Works with any language or scheduler.'              },
+  { icon: '◫',  title: 'Missed Run Detection',    desc: "Define your interval. If a ping doesn't arrive on time, CronWatch flags it before your users do."          },
 ]
 
 const STACK = [
-  { label: 'Framework', value: 'Next.js 15 App Router' },
-  { label: 'Database',  value: 'Supabase (Postgres + RLS)' },
-  { label: 'Auth',      value: 'Supabase Auth' },
-  { label: 'Email',     value: 'Resend' },
-  { label: 'Payments',  value: 'Lemon Squeezy' },
-  { label: 'AI',        value: 'Claude API (Anthropic)' },
-  { label: 'Hosting',   value: 'Vercel Edge Network' },
+  { label: 'Framework', value: 'Next.js 15 App Router'        },
+  { label: 'Database',  value: 'Supabase (Postgres + RLS)'    },
+  { label: 'Auth',      value: 'Supabase Auth'                },
+  { label: 'Email',     value: 'Resend'                       },
+  { label: 'Payments',  value: 'Lemon Squeezy'                },
+  { label: 'AI',        value: 'Claude API (Anthropic)'       },
+  { label: 'Hosting',   value: 'Vercel Edge Network'          },
   { label: 'Styling',   value: 'Tailwind CSS + CSS Variables' },
 ]
-
-function useReveal() {
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { el.style.opacity = '1'; el.style.transform = 'none'; observer.disconnect() } },
-      { threshold: 0.08 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-  return ref
-}
-
-function RevealSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
-  const ref = useReveal()
-  return (
-    <div ref={ref} style={{ opacity: 0, transform: 'translateY(28px)', transition: `opacity 0.7s ${delay}ms ease, transform 0.7s ${delay}ms ease` }}>
-      {children}
-    </div>
-  )
-}
 
 function SectionLabel({ label, accent }: { label: string; accent: string }) {
   return (
@@ -75,7 +56,7 @@ function SectionLabel({ label, accent }: { label: string; accent: string }) {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 800, fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', color: 'rgba(255,255,255,0.92)', lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '3rem' }}>
+    <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', color: 'rgba(255,255,255,0.92)', lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '3rem' }}>
       {children}
     </h2>
   )
@@ -83,13 +64,19 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 export default function AboutPage() {
   const [activeTheme] = usePersistedTheme()
-  const theme   = useMemo(() => THEMES[activeTheme], [activeTheme])
+  const theme         = useMemo(() => THEMES[activeTheme], [activeTheme])
   const [base, panel] = theme.palette
-  const accent  = theme.accent
+  const accent        = theme.accent
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const pageRef     = useRef<HTMLElement>(null)
+  const canvasRef   = useRef<HTMLCanvasElement>(null)
+  // cursor sits at z-index 9999, rendered last so nothing paints over it
+  const cursorRef   = useRef<HTMLDivElement>(null)
+  const orbOneRef   = useRef<HTMLDivElement>(null)
+  const orbTwoRef   = useRef<HTMLDivElement>(null)
+  const orbThreeRef = useRef<HTMLDivElement>(null)
 
-  // Animated grid background — same as landing page orb setup
+  // ── Canvas grid + scanline ──────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -106,7 +93,6 @@ export default function AboutPage() {
       const g = 52, oy = (frame * 0.25) % g
       for (let x = 0; x < canvas.width; x += g) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke() }
       for (let y = -g + oy; y < canvas.height; y += g) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke() }
-      // scanline
       const sy = (frame * 1.5) % canvas.height
       const gr = ctx.createLinearGradient(0, sy - 60, 0, sy + 60)
       gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.018)'); gr.addColorStop(1, 'rgba(255,255,255,0)')
@@ -117,32 +103,154 @@ export default function AboutPage() {
     return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize) }
   }, [accent])
 
+  // ── GSAP animations ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduceMotion) return
+
+    // Scope GSAP context to pageRef once it's available
+    const ctx = gsap.context(() => {
+
+      // ── Initial states ──────────────────────────────────────────────────────
+      gsap.set('.about-nav',        { opacity: 0, y: -14 })
+      gsap.set('.about-hero-label', { opacity: 0, y: 16,  filter: 'blur(6px)' })
+      gsap.set('.about-hero-word',  { opacity: 0, y: 32,  filter: 'blur(8px)' })
+      gsap.set('.about-hero-sub',   { opacity: 0, y: 22,  filter: 'blur(6px)' })
+      gsap.set('.about-terminal',   { opacity: 0, y: 28,  scale: 0.97 })
+
+      // ── Entrance timeline ───────────────────────────────────────────────────
+      gsap
+        .timeline({ defaults: { ease: 'power3.out' } })
+        .to('.about-nav',        { opacity: 1, y: 0,                      duration: 0.55 })
+        .to('.about-hero-label', { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.5  }, '-=0.25')
+        .to('.about-hero-word',  { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, stagger: 0.08 }, '-=0.3')
+        .to('.about-hero-sub',   { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6  }, '-=0.4')
+        .to('.about-terminal',   { opacity: 1, y: 0, scale: 1,            duration: 0.65 }, '-=0.35')
+
+      // ── Floating orbs — guarded so GSAP never gets a null target ───────────
+      if (orbOneRef.current)   gsap.to(orbOneRef.current,   { y: -22, x: 14,  duration: 7,   repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      if (orbTwoRef.current)   gsap.to(orbTwoRef.current,   { y: -30, x: -12, duration: 8.3, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      if (orbThreeRef.current) gsap.to(orbThreeRef.current, { y: -18, x: 8,   duration: 9.1, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+
+      // ── Scroll-reveal helper ────────────────────────────────────────────────
+      const scrollReveal = (selector: string, extra?: gsap.TweenVars) =>
+        gsap.fromTo(
+          selector,
+          { opacity: 0, y: 50, filter: 'blur(8px)' },
+          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.75, ease: 'power3.out',
+            scrollTrigger: { trigger: selector, start: 'top 84%', once: true },
+            ...extra,
+          }
+        )
+
+      scrollReveal('.hiw-header')
+      gsap.fromTo('.step-card-gsap',
+        { opacity: 0, y: 40, filter: 'blur(6px)' },
+        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power3.out', stagger: 0.1,
+          scrollTrigger: { trigger: '.step-cards-grid', start: 'top 82%', once: true } }
+      )
+
+      scrollReveal('.features-header')
+      gsap.fromTo('.feat-card-gsap',
+        { opacity: 0, y: 36, filter: 'blur(6px)' },
+        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.55, ease: 'power3.out', stagger: 0.08,
+          scrollTrigger: { trigger: '.feat-cards-grid', start: 'top 82%', once: true } }
+      )
+
+      scrollReveal('.stack-header')
+      gsap.fromTo('.stack-row-gsap',
+        { opacity: 0, x: -24 },
+        { opacity: 1, x: 0, duration: 0.45, ease: 'power2.out', stagger: 0.06,
+          scrollTrigger: { trigger: '.stack-table', start: 'top 84%', once: true } }
+      )
+
+      scrollReveal('.mission-header')
+      gsap.fromTo('.mission-quote',
+        { opacity: 0, x: -30, filter: 'blur(4px)' },
+        { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power3.out',
+          scrollTrigger: { trigger: '.mission-quote', start: 'top 84%', once: true } }
+      )
+      gsap.fromTo('.mission-body',
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out',
+          scrollTrigger: { trigger: '.mission-body', start: 'top 86%', once: true } }
+      )
+
+      scrollReveal('.cta-section')
+
+    }, pageRef)
+
+    // ── Cursor glow + mouse parallax ────────────────────────────────────────
+    // NOTE: listeners are on window, NOT inside gsap.context, so they work
+    // even if pageRef isn't mounted yet on the very first event.
+    const onMove = (e: MouseEvent) => {
+      // Cursor glow — always works because cursorRef is outside <main>
+      if (cursorRef.current) {
+        gsap.to(cursorRef.current, {
+          x: e.clientX - 120,
+          y: e.clientY - 120,
+          opacity: 0.85,
+          duration: 0.45,
+          ease: 'power2.out',
+        })
+      }
+      // Parallax orbs — only when page is mounted
+      if (pageRef.current) {
+        const x    = (e.clientX / window.innerWidth  - 0.5) * 20
+        const y    = (e.clientY / window.innerHeight - 0.5) * 16
+        const soft = Array.from(pageRef.current.querySelectorAll('.mouse-parallax-soft'))
+        if (soft.length) gsap.to(soft, { x: x * 0.5, y: y * 0.35, duration: 1.2, ease: 'power3.out' })
+      }
+    }
+
+    const onLeave = () => {
+      if (cursorRef.current) gsap.to(cursorRef.current, { opacity: 0, duration: 0.35 })
+    }
+
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseleave', onLeave)
+
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseleave', onLeave)
+      ctx.revert()
+    }
+  }, [])
+
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:none } }
-        @keyframes blink  { 0%,100%{opacity:1} 50%{opacity:0} }
-        .about-nav-link:hover { color: rgba(255,255,255,0.95) !important; background: rgba(255,255,255,0.06) !important; }
-        .step-card:hover  { border-color: ${accent}55 !important; background: ${accent}08 !important; }
-        .feat-card:hover  { background: ${accent}0A !important; }
+        *, *::before, *::after { box-sizing: border-box; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        .about-nav-link:hover   { color: rgba(255,255,255,0.95) !important; background: rgba(255,255,255,0.06) !important; }
+        .step-card:hover        { border-color: ${accent}55 !important; background: ${accent}08 !important; }
+        .feat-card:hover        { background: ${accent}0A !important; }
         .feat-card:hover .feat-icon { transform: scale(1.15); }
-        .stack-row:hover  { background: ${accent}08 !important; }
+        .stack-row:hover        { background: ${accent}08 !important; }
         .about-cta-primary:hover  { background: ${accent} !important; color: #0a0a0a !important; box-shadow: 0 8px 32px ${accent}55 !important; }
         .about-cta-secondary:hover { border-color: ${accent}88 !important; color: rgba(255,255,255,0.8) !important; }
       `}</style>
 
-      {/* Animated canvas */}
+      {/* Canvas grid — z-index 0 */}
       <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }} />
 
-      {/* Ambient glow */}
+      {/* Floating orbs — z-index 0, behind main */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <div ref={orbOneRef}   className="mouse-parallax-soft" style={{ position: 'absolute', left: '8%',   top: '12%',    width: 220, height: 220, borderRadius: '50%', background: `${accent}44`,           filter: 'blur(80px)'  }} />
+        <div ref={orbTwoRef}   className="mouse-parallax-soft" style={{ position: 'absolute', right: '10%', top: '30%',    width: 280, height: 280, borderRadius: '50%', background: `${panel}88`,            filter: 'blur(100px)' }} />
+        <div ref={orbThreeRef} className="mouse-parallax-soft" style={{ position: 'absolute', left: '38%',  bottom: '10%', width: 300, height: 300, borderRadius: '50%', background: `${theme.palette[2]}44`, filter: 'blur(120px)' }} />
+      </div>
+
+      {/* Ambient top glow — z-index 0 */}
       <div style={{ position: 'fixed', top: '-15vh', left: '50%', transform: 'translateX(-50%)', width: '70vw', height: '50vh', background: `radial-gradient(ellipse, ${accent}0D 0%, transparent 70%)`, zIndex: 0, pointerEvents: 'none' }} />
 
-      <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', background: `radial-gradient(circle at 10% 0%, ${accent}30 0%, transparent 45%), radial-gradient(circle at 90% 90%, ${panel}AA 0%, transparent 40%), ${base}`, color: 'rgba(255,255,255,0.82)', transition: 'background 360ms ease' }}>
-
+      {/* Main content — z-index 1 */}
+      <main
+        ref={pageRef}
+        style={{ position: 'relative', zIndex: 1, minHeight: '100vh', background: `radial-gradient(circle at 10% 0%, ${accent}30 0%, transparent 45%), radial-gradient(circle at 90% 90%, ${panel}AA 0%, transparent 40%), ${base}`, color: 'rgba(255,255,255,0.82)', transition: 'background 360ms ease' }}
+      >
         {/* ── NAV ── */}
-        <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.1rem 2.5rem', borderBottom: `1px solid ${accent}22`, backdropFilter: 'blur(14px)', background: `${panel}B0`, position: 'sticky', top: 0, zIndex: 100 }}>
+        <nav className="about-nav" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.1rem 2.5rem', borderBottom: `1px solid ${accent}22`, backdropFilter: 'blur(14px)', background: `${panel}B0`, position: 'sticky', top: 0, zIndex: 100 }}>
           <Link href="/" style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.95rem', color: accent, textDecoration: 'none', letterSpacing: '0.06em' }}>
             CRON<span style={{ color: 'rgba(255,255,255,0.7)' }}>WATCH</span>
           </Link>
@@ -161,25 +269,27 @@ export default function AboutPage() {
         <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.5rem' }}>
 
           {/* ── HERO ── */}
-          <section style={{ padding: '7rem 0 5rem', textAlign: 'center', animation: 'fadeUp 0.8s ease both' }}>
-            <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.25em', color: accent, opacity: 0.65, marginBottom: '1.25rem' }}>◈ ABOUT CRONWATCH</div>
-            <h1 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 800, fontSize: 'clamp(2.6rem, 6vw, 5rem)', lineHeight: 1.06, letterSpacing: '-0.02em', color: 'rgba(255,255,255,0.94)', marginBottom: '1.5rem' }}>
-              Your cron jobs deserve<br />
-              <span style={{ color: accent }}>to be watched.</span>
+          <section style={{ padding: '7rem 0 5rem', textAlign: 'center' }}>
+            <div className="about-hero-label" style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.25em', color: accent, opacity: 0.65, marginBottom: '1.25rem' }}>◈ ABOUT CRONWATCH</div>
+
+            <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, fontSize: 'clamp(2.6rem, 6vw, 5rem)', lineHeight: 1.06, letterSpacing: '-0.02em', color: 'rgba(255,255,255,0.94)', marginBottom: '1.5rem' }}>
+              <span className="about-hero-word" style={{ display: 'inline-block' }}>Your cron jobs deserve</span>
+              <br />
+              <span className="about-hero-word" style={{ display: 'inline-block', color: accent }}>to be watched.</span>
             </h1>
-            <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '1.05rem', color: 'rgba(255,255,255,0.45)', maxWidth: '520px', margin: '0 auto 2.5rem', lineHeight: 1.8 }}>
+
+            <p className="about-hero-sub" style={{ fontFamily: 'var(--font-sans)', fontSize: '1.05rem', color: 'rgba(255,255,255,0.45)', maxWidth: '520px', margin: '0 auto 2.5rem', lineHeight: 1.8 }}>
               CronWatch is a lightweight, AI-powered monitoring tool built for developers who ship fast and can't afford silent failures.
             </p>
 
-            {/* Terminal block */}
-            <div style={{ display: 'inline-block', textAlign: 'left', background: 'rgba(0,0,0,0.55)', border: `1px solid ${accent}22`, borderRadius: '10px', padding: '1.25rem 1.75rem', minWidth: '320px' }}>
+            <div className="about-terminal" style={{ display: 'inline-block', textAlign: 'left', background: 'rgba(0,0,0,0.55)', border: `1px solid ${accent}22`, borderRadius: '10px', padding: '1.25rem 1.75rem', minWidth: '320px' }}>
               <div style={{ display: 'flex', gap: '6px', marginBottom: '0.9rem' }}>
                 {['#ff5f57','#febc2e','#28c840'].map(c => <span key={c} style={{ width: 9, height: 9, borderRadius: '50%', background: c, display: 'inline-block' }} />)}
               </div>
               {[
-                { text: 'Initializing cronwatch...', delay: 0 },
-                { text: 'Loading monitor registry', delay: 300 },
-                { text: 'AI analyst: ready', delay: 600 },
+                { text: 'Initializing cronwatch...', delay: 0   },
+                { text: 'Loading monitor registry',  delay: 300 },
+                { text: 'AI analyst: ready',         delay: 600 },
                 { text: 'All systems operational ✓', delay: 900 },
               ].map(({ text, delay }) => (
                 <TerminalLine key={text} text={text} delay={delay} accent={accent} />
@@ -188,97 +298,89 @@ export default function AboutPage() {
           </section>
 
           {/* ── HOW IT WORKS ── */}
-          <RevealSection>
-            <section style={{ padding: '4rem 0' }}>
-              <div style={{ textAlign: 'center' }}>
-                <SectionLabel label="HOW IT WORKS" accent={accent} />
-                <SectionTitle>Four steps to complete visibility.</SectionTitle>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1px', background: `${accent}14`, border: `1px solid ${accent}14` }}>
-                {STEPS.map((s, i) => (
-                  <div key={i} className="step-card" style={{ background: base, padding: '1.75rem', transition: 'all 0.2s', border: '1px solid transparent', cursor: 'default' }}>
-                    <div style={{ fontFamily: 'monospace', fontSize: '2.2rem', fontWeight: 700, color: `${accent}22`, marginBottom: '0.75rem', lineHeight: 1 }}>{s.num}</div>
-                    <h3 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(255,255,255,0.88)', marginBottom: '0.6rem' }}>{s.title}</h3>
-                    <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '0.83rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, marginBottom: '1rem' }}>{s.body}</p>
-                    <code style={{ fontFamily: 'monospace', fontSize: '0.68rem', color: accent, opacity: 0.6, background: `${accent}0F`, padding: '0.3rem 0.6rem', display: 'inline-block', borderRadius: '4px' }}>{s.code}</code>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </RevealSection>
+          <section style={{ padding: '4rem 0' }}>
+            <div className="hiw-header" style={{ textAlign: 'center' }}>
+              <SectionLabel label="HOW IT WORKS" accent={accent} />
+              <SectionTitle>Four steps to complete visibility.</SectionTitle>
+            </div>
+            <div className="step-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1px', background: `${accent}14`, border: `1px solid ${accent}14` }}>
+              {STEPS.map((s, i) => (
+                <div key={i} className="step-card step-card-gsap" style={{ background: base, padding: '1.75rem', transition: 'all 0.2s', border: '1px solid transparent', cursor: 'default' }}>
+                  <div style={{ fontFamily: 'monospace', fontSize: '2.2rem', fontWeight: 700, color: `${accent}40`, marginBottom: '0.75rem', lineHeight: 1 }}>{s.num}</div>
+                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(255,255,255,0.88)', marginBottom: '0.6rem' }}>{s.title}</h3>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.83rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, marginBottom: '1rem' }}>{s.body}</p>
+                  <code style={{ fontFamily: 'monospace', fontSize: '0.68rem', color: accent, opacity: 0.6, background: `${accent}0F`, padding: '0.3rem 0.6rem', display: 'inline-block', borderRadius: '4px' }}>{s.code}</code>
+                </div>
+              ))}
+            </div>
+          </section>
 
           {/* ── FEATURES ── */}
-          <RevealSection delay={100}>
-            <section style={{ padding: '4rem 0' }}>
-              <div style={{ textAlign: 'center' }}>
-                <SectionLabel label="FEATURES" accent={accent} />
-                <SectionTitle>Everything you need. Nothing you don't.</SectionTitle>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1px', background: `${accent}10` }}>
-                {FEATURES.map((f, i) => (
-                  <div key={i} className="feat-card" style={{ background: base, padding: '1.75rem', transition: 'background 0.2s' }}>
-                    <div className="feat-icon" style={{ fontSize: '1.4rem', marginBottom: '0.75rem', display: 'inline-block', transition: 'transform 0.2s' }}>{f.icon}</div>
-                    <h3 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(255,255,255,0.88)', marginBottom: '0.5rem' }}>{f.title}</h3>
-                    <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '0.83rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.75 }}>{f.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </RevealSection>
+          <section style={{ padding: '4rem 0' }}>
+            <div className="features-header" style={{ textAlign: 'center' }}>
+              <SectionLabel label="FEATURES" accent={accent} />
+              <SectionTitle>Everything you need. Nothing you don't.</SectionTitle>
+            </div>
+            <div className="feat-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1px', background: `${accent}10` }}>
+              {FEATURES.map((f, i) => (
+                <div key={i} className="feat-card feat-card-gsap" style={{ background: base, padding: '1.75rem', transition: 'background 0.2s' }}>
+                  <div className="feat-icon" style={{ fontSize: '1.4rem', marginBottom: '0.75rem', display: 'inline-block', transition: 'transform 0.2s' }}>{f.icon}</div>
+                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(255,255,255,0.88)', marginBottom: '0.5rem' }}>{f.title}</h3>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.83rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.75 }}>{f.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
 
           {/* ── TECH STACK ── */}
-          <RevealSection delay={100}>
-            <section style={{ padding: '4rem 0', maxWidth: '680px', margin: '0 auto' }}>
-              <div style={{ textAlign: 'center' }}>
-                <SectionLabel label="TECH STACK" accent={accent} />
-                <SectionTitle>Built on solid ground.</SectionTitle>
-              </div>
-              <div style={{ border: `1px solid ${accent}18`, overflow: 'hidden', borderRadius: '6px' }}>
-                {STACK.map((item, i) => (
-                  <div key={i} className="stack-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.4rem', borderBottom: i < STACK.length - 1 ? `1px solid ${accent}0E` : 'none', transition: 'background 0.15s' }}>
-                    <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.28)', letterSpacing: '0.12em' }}>{item.label.toUpperCase()}</span>
-                    <span style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 600, fontSize: '0.88rem', color: 'rgba(255,255,255,0.75)' }}>{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </RevealSection>
+          <section style={{ padding: '4rem 0', maxWidth: '680px', margin: '0 auto' }}>
+            <div className="stack-header" style={{ textAlign: 'center' }}>
+              <SectionLabel label="TECH STACK" accent={accent} />
+              <SectionTitle>Built on solid ground.</SectionTitle>
+            </div>
+            <div className="stack-table" style={{ border: `1px solid ${accent}18`, overflow: 'hidden', borderRadius: '6px' }}>
+              {STACK.map((item, i) => (
+                <div key={i} className="stack-row stack-row-gsap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1.4rem', borderBottom: i < STACK.length - 1 ? `1px solid ${accent}0E` : 'none', transition: 'background 0.15s' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.28)', letterSpacing: '0.12em' }}>{item.label.toUpperCase()}</span>
+                  <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '0.88rem', color: 'rgba(255,255,255,0.75)' }}>{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </section>
 
           {/* ── MISSION ── */}
-          <RevealSection delay={100}>
-            <section style={{ padding: '4rem 0 2rem', maxWidth: '680px', margin: '0 auto', textAlign: 'center' }}>
+          <section style={{ padding: '4rem 0 2rem', maxWidth: '680px', margin: '0 auto', textAlign: 'center' }}>
+            <div className="mission-header">
               <SectionLabel label="THE MISSION" accent={accent} />
               <SectionTitle>Why CronWatch exists.</SectionTitle>
-              <blockquote style={{ borderLeft: `2px solid ${accent}44`, padding: '1.25rem 1.5rem', textAlign: 'left', background: `${accent}06`, marginBottom: '2rem', borderRadius: '0 6px 6px 0' }}>
-                <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '1rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.85, fontStyle: 'italic' }}>
-                  "I built CronWatch because I kept waking up to silent failures. Scheduled jobs would miss their window, data pipelines would stall, and nothing would tell me — until a user did. I wanted a tool that's dead simple to integrate but smart enough to explain what went wrong."
-                </p>
-                <footer style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.85rem', letterSpacing: '0.12em' }}>— MKHOI28, FOUNDER</footer>
-              </blockquote>
-              <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '0.9rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.85 }}>
-                CronWatch is a solo side project built with a zero-budget constraint and a commercial ambition. Every design decision favors developer simplicity over feature bloat. The AI layer isn't a gimmick — it's the reason this tool exists.
+            </div>
+            <blockquote className="mission-quote" style={{ borderLeft: `2px solid ${accent}44`, padding: '1.25rem 1.5rem', textAlign: 'left', background: `${accent}06`, marginBottom: '2rem', borderRadius: '0 6px 6px 0' }}>
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '1rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.85, fontStyle: 'italic' }}>
+                "I built CronWatch because I kept waking up to silent failures. Scheduled jobs would miss their window, data pipelines would stall, and nothing would tell me — until a user did. I wanted a tool that's dead simple to integrate but smart enough to explain what went wrong."
               </p>
-            </section>
-          </RevealSection>
+              <footer style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255,255,255,0.25)', marginTop: '0.85rem', letterSpacing: '0.12em' }}>— DUONG MINH KHOI, FOUNDER</footer>
+            </blockquote>
+            <p className="mission-body" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.85 }}>
+              CronWatch is a solo side project built with a zero-budget constraint and a commercial ambition. Every design decision favors developer simplicity over feature bloat. The AI layer isn't a gimmick — it's the reason this tool exists.
+            </p>
+          </section>
 
           {/* ── CTA ── */}
-          <RevealSection delay={100}>
-            <section style={{ padding: '5rem 0 7rem', textAlign: 'center' }}>
-              <SectionLabel label="GET STARTED FREE" accent={accent} />
-              <h2 style={{ fontFamily: '"Inter", system-ui, sans-serif', fontWeight: 800, fontSize: 'clamp(2rem, 4.5vw, 3.2rem)', color: 'rgba(255,255,255,0.92)', lineHeight: 1.1, marginBottom: '0.75rem' }}>
-                Start monitoring in<br /><span style={{ color: accent }}>under 60 seconds.</span>
-              </h2>
-              <p style={{ fontFamily: '"Inter", system-ui, sans-serif', fontSize: '0.9rem', color: 'rgba(255,255,255,0.32)', marginBottom: '2.25rem' }}>Free tier · No credit card · 10 monitors included</p>
-              <div style={{ display: 'flex', gap: '0.85rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href="/signup" className="about-cta-primary" style={{ fontFamily: 'monospace', fontSize: '0.75rem', letterSpacing: '0.1em', padding: '0.8rem 1.9rem', background: `${accent}22`, border: `1px solid ${accent}66`, color: accent, textDecoration: 'none', borderRadius: '8px', transition: 'all 0.2s', display: 'inline-block' }}>
-                  CREATE FREE ACCOUNT →
-                </Link>
-                <Link href="/" className="about-cta-secondary" style={{ fontFamily: 'monospace', fontSize: '0.75rem', letterSpacing: '0.1em', padding: '0.8rem 1.9rem', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', borderRadius: '8px', transition: 'all 0.2s', display: 'inline-block' }}>
-                  ← BACK TO HOME
-                </Link>
-              </div>
-            </section>
-          </RevealSection>
+          <section className="cta-section" style={{ padding: '5rem 0 7rem', textAlign: 'center' }}>
+            <SectionLabel label="GET STARTED FREE" accent={accent} />
+            <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, fontSize: 'clamp(2rem, 4.5vw, 3.2rem)', color: 'rgba(255,255,255,0.92)', lineHeight: 1.1, marginBottom: '0.75rem' }}>
+              Start monitoring in<br /><span style={{ color: accent }}>under 60 seconds.</span>
+            </h2>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', color: 'rgba(255,255,255,0.32)', marginBottom: '2.25rem' }}>Free tier · No credit card · 10 monitors included</p>
+            <div style={{ display: 'flex', gap: '0.85rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/signup" className="about-cta-primary" style={{ fontFamily: 'monospace', fontSize: '0.75rem', letterSpacing: '0.1em', padding: '0.8rem 1.9rem', background: `${accent}22`, border: `1px solid ${accent}66`, color: accent, textDecoration: 'none', borderRadius: '8px', transition: 'all 0.2s', display: 'inline-block' }}>
+                CREATE FREE ACCOUNT →
+              </Link>
+              <Link href="/" className="about-cta-secondary" style={{ fontFamily: 'monospace', fontSize: '0.75rem', letterSpacing: '0.1em', padding: '0.8rem 1.9rem', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', borderRadius: '8px', transition: 'all 0.2s', display: 'inline-block' }}>
+                ← BACK TO HOME
+              </Link>
+            </div>
+          </section>
 
         </div>
 
@@ -292,13 +394,33 @@ export default function AboutPage() {
           </div>
         </footer>
       </main>
+
+      {/*
+        Cursor glow — rendered AFTER <main> in the DOM and at z-index 9999.
+        This is the key fix: previously it was before <main> with z-index 1,
+        so <main> (also z-index 1, later in DOM) painted right over it.
+      */}
+      <div
+        ref={cursorRef}
+        style={{
+          position: 'fixed', left: 0, top: 0,
+          width: 240, height: 240,
+          borderRadius: '50%',
+          background: `${accent}40`,
+          filter: 'blur(70px)',
+          pointerEvents: 'none',
+          zIndex: 9999,
+          opacity: 0,
+          willChange: 'transform, opacity',
+        }}
+      />
     </>
   )
 }
 
 function TerminalLine({ text, delay, accent }: { text: string; delay: number; accent: string }) {
   const [visible, setVisible] = useState(false)
-  const [typed, setTyped]     = useState('')
+  const [typed,   setTyped]   = useState('')
 
   useEffect(() => {
     const t = setTimeout(() => {

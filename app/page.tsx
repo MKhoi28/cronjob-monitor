@@ -560,7 +560,7 @@
 
               {/* Right: Text */}
               <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '2.5rem', fontWeight: 700, color: `${accent}18`, lineHeight: 1, marginBottom: '0.5rem' }}>01</div>
+                <div style={{ fontFamily: 'monospace', fontSize: '2.5rem', fontWeight: 700, color: `${accent}80`, lineHeight: 1, marginBottom: '0.5rem' }}>01</div>
                 <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ letterSpacing: '-0.01em' }}>
                   One HTTP call.<br />Zero configuration.
                 </h3>
@@ -579,7 +579,7 @@
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center mb-28">
               {/* Left: Text */}
               <div className="md:order-1 order-2">
-                <div style={{ fontFamily: 'monospace', fontSize: '2.5rem', fontWeight: 700, color: `${accent}18`, lineHeight: 1, marginBottom: '0.5rem' }}>02</div>
+                <div style={{ fontFamily: 'monospace', fontSize: '2.5rem', fontWeight: 700, color: `${accent}80`, lineHeight: 1, marginBottom: '0.5rem' }}>02</div>
                 <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ letterSpacing: '-0.01em' }}>
                   Miss a ping?<br />We know in 60 seconds.
                 </h3>
@@ -659,7 +659,7 @@
 
               {/* Right: Text */}
               <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '2.5rem', fontWeight: 700, color: `${accent}18`, lineHeight: 1, marginBottom: '0.5rem' }}>03</div>
+                <div style={{ fontFamily: 'monospace', fontSize: '2.5rem', fontWeight: 700, color: `${accent}80`, lineHeight: 1, marginBottom: '0.5rem' }}>03</div>
                 <h3 className="text-2xl md:text-3xl font-bold mb-4" style={{ letterSpacing: '-0.01em' }}>
                   Not just an alert.<br />
                   <span style={{ color: accent }}>An actual diagnosis.</span>
@@ -668,7 +668,7 @@
                   Click Analyze on any monitor. Our AI reads your entire ping history, computes 7 statistical metrics, and returns a plain-English verdict — severity, pattern, root cause, and a concrete fix.
                 </p>
                 <p className="text-sm" style={{ color: 'rgba(255,255,255,0.28)', lineHeight: 1.7, fontFamily: 'monospace' }}>
-                  // No competitor offers this at any price point.
+                  No competitor offers this at any price point.
                 </p>
               </div>
             </div>
@@ -695,7 +695,7 @@
                 {[
                   { name: 'Healthchecks.io', price: 'Free / $20+', ai: false, badge: false, themes: false },
                   { name: 'Cronitor',         price: '$21+/mo',     ai: false, badge: true,  themes: false },
-                  { name: 'CronWatch',        price: 'Free / $9/mo', ai: true,  badge: true,  themes: true,  highlight: true },
+                  { name: 'CronWatch',        price: 'Free / $14.99/mo', ai: true,  badge: true,  themes: true,  highlight: true },
                 ].map((row) => (
                   <div
                     key={row.name}
@@ -780,7 +780,7 @@
 
               {/* Links */}
               <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.25)', marginBottom: '1rem' }}>PRODUCT</div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.95rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.25)', marginBottom: '1rem' }}>PRODUCT</div>
                 <div className="space-y-2">
                   {[
                     { label: 'About',   href: '/about'   },
@@ -799,7 +799,7 @@
 
               {/* Legal + Contact */}
               <div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.25)', marginBottom: '1rem' }}>LEGAL & CONTACT</div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.95rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.25)', marginBottom: '1rem' }}>LEGAL & CONTACT</div>
                 <div className="space-y-2">
                   {[
                     { label: 'Terms of Service', href: '/terms'   },
