@@ -70,8 +70,11 @@ export async function GET(
   }
 
   // ---- Log ping ----
-  await supabase.from('ping_logs').insert({ monitor_id: parsed.data.id })
-
+  await supabase.from('ping_logs').insert({
+    monitor_id: parsed.data.id,
+    ok: true,
+    status_code: 200,
+  })
   await supabase
     .from('monitors')
     .update({ last_ping_at: new Date().toISOString(), status: 'healthy' })
