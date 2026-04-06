@@ -57,13 +57,16 @@ export default function DemoWidget() {
   return (
     <div style={{
       position: 'relative',
-      background: 'rgba(15,23,42,0.6)',
-      border: '1px solid rgba(255,255,255,0.08)',
+      background: 'var(--card-bg)',
+      border: `1px solid ${cfg.color}55`,
       borderRadius: '16px',
       overflow: 'hidden',
       backdropFilter: 'blur(12px)',
-      boxShadow: `0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04), 0 0 40px ${cfg.color}0A`,
-      maxWidth: '480px',
+      boxShadow: `
+        0 0 0 1px ${cfg.color}22,
+        0 20px 60px rgba(0,0,0,0.7),
+        0 0 50px ${cfg.color}33
+      `,      maxWidth: '480px',
       width: '100%',
       fontFamily: "'Space Mono', monospace",
     }}>

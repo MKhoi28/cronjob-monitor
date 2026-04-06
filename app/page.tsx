@@ -472,7 +472,12 @@
             </div>
           </section>
 
-          <DemoWidget />
+          <section
+            ref={heroRef}
+            className="relative min-h-[calc(100vh-100px)] flex items-center justify-center text-center"
+          >
+             <DemoWidget />
+          </section>
 
           {/* ── Features / Three Pillars ── */}
           <section className="mx-auto max-w-7xl px-6 md:px-10 mt-16">
