@@ -91,7 +91,10 @@ initMonitor({
 
 ## 📸 Screenshots
 
-(Add screenshots here to increase trust)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/d9ddfb91-170c-45bc-b5f0-de708505bf3d" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e415b4ff-6730-43dc-8741-b03cc1d12ef2" />
+
+
 
 ---
 
