@@ -5,6 +5,7 @@
   import { ScrollTrigger } from 'gsap/ScrollTrigger'
   import Link from 'next/link'
   import { usePersistedTheme } from '@/hooks/usePersistedTheme'
+  import DemoWidget from '@/components/DemoWidget'
 
   gsap.registerPlugin(ScrollTrigger)
 
@@ -469,25 +470,9 @@
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>42ms ALERT LATENCY</div>
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>GLOBAL COVERAGE</div>
             </div>
-
-            <div ref={heroVisualRef} className="hero-visual-layer mouse-parallax-soft mx-auto mt-12 max-w-4xl">
-              <div className="relative overflow-hidden rounded-[28px] border p-3 md:p-4" style={{ borderColor: `${accent}A0`, backgroundColor: `${panel}C6`, boxShadow: `0 30px 90px ${base}99, 0 10px 30px ${accent}33`, transformStyle: 'preserve-3d' }}>
-                <div className="hero-portal-spin absolute left-1/2 top-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed" style={{ borderColor: `${accent}57` }} />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.08)_0%,transparent_60%)]" />
-                <div className="relative h-[280px] rounded-[22px] border p-6 md:h-[360px]" style={{ borderColor: `${accent}4F`, backgroundColor: `${base}D2` }}>
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_52%_50%,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.01)_40%,transparent_66%)]" />
-                  <div className="absolute left-1/2 top-1/2 h-[44%] w-[44%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[70px]" style={{ background: `${accent}4A` }} />
-                  <div className="absolute left-1/2 top-1/2 h-[32%] w-[32%] -translate-x-1/2 -translate-y-1/2 rounded-full border hero-orbit-line" style={{ borderColor: `${accent}9F` }} />
-                  <div className="hero-core-pulse absolute left-1/2 top-1/2 h-[16%] w-[16%] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ backgroundColor: accent, boxShadow: `0 0 38px ${accent}` }} />
-                  <div className="hero-visual-layer absolute left-6 top-6 rounded-xl border px-3 py-2 text-xs tracking-[0.15em]" style={{ borderColor: `${accent}72`, backgroundColor: `${panel}CE` }}>Ping stream online</div>
-                  <div className="hero-visual-layer absolute bottom-6 right-6 rounded-xl border px-3 py-2 text-xs tracking-[0.15em]" style={{ borderColor: `${accent}72`, backgroundColor: `${panel}CE` }}>
-                    Incident response <span style={{ color: '#A6FFCE' }}>2.1x faster</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </section>
 
+          <DemoWidget />
 
           {/* ── Features / Three Pillars ── */}
           <section className="mx-auto max-w-7xl px-6 md:px-10 mt-16">
