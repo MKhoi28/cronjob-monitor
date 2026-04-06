@@ -46,7 +46,7 @@ Clone the repo:
 
 ```bash
 git clone https://https://github.com/MKhoi28/cronjob-monitor
-cd crwatch
+cd cronjob-monitor
 ```
 
 Install dependencies:
