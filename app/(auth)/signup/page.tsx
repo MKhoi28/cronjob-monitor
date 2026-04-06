@@ -9,7 +9,7 @@ import { THEMES, ThemePicker } from '@/components/ThemeChooserBar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { signupSchema } from '@/lib/validations'
 import { usePersistedTheme } from '@/hooks/usePersistedTheme'
 
@@ -18,8 +18,11 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
-  // After signup Supabase sends a verification email — show confirmation UI
   const [verificationSent, setVerificationSent] = useState(false)
+
+  // ── Policy agreement ────────────────────────────────────────────────────
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [termsError, setTermsError]       = useState(false)
 
   const [activeTheme, setActiveTheme] = usePersistedTheme()
   const [previewTheme, setPreviewTheme] = useState<number | null>(null)
@@ -28,10 +31,16 @@ export default function SignupPage() {
   const accent = theme.accent
 
   async function handleSignup() {
+    // Must agree to policies before proceeding
+    if (!agreedToTerms) {
+      setTermsError(true)
+      setTimeout(() => setTermsError(false), 2800)
+      return
+    }
+
     setLoading(true)
     setError('')
 
-    // Validate + sanitize before touching Supabase
     const parsed = signupSchema.safeParse({ email, password })
     if (!parsed.success) {
       setError(parsed.error.issues[0].message)
@@ -39,23 +48,19 @@ export default function SignupPage() {
       return
     }
 
-    // createClient() inside handler to avoid render-time fetch
     const supabase = createClient()
     const { error } = await supabase.auth.signUp({
       email:    parsed.data.email,
       password: parsed.data.password,
       options: {
-        // Supabase will redirect here after the user clicks the email link
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     })
 
     if (error) {
-      // Generic — don't reveal if email already registered
       setError('Could not create account. Please try again.')
       setLoading(false)
     } else {
-      // Show email verification step — don't auto-redirect yet
       setVerificationSent(true)
       setLoading(false)
     }
@@ -119,7 +124,6 @@ export default function SignupPage() {
                   backdropFilter: 'blur(20px)',
                 }}>
                   <CardContent className="pt-10 pb-8 px-8 space-y-5">
-                    {/* Envelope icon */}
                     <div
                       className="w-16 h-16 rounded-2xl border flex items-center justify-center mx-auto"
                       style={{ borderColor: `${accent}44`, backgroundColor: `${accent}15` }}
@@ -129,21 +133,15 @@ export default function SignupPage() {
                         <path d="M2 9l12 8 12-8" stroke={accent} strokeWidth="1.8" strokeLinecap="round"/>
                       </svg>
                     </div>
-
                     <div>
                       <h2 className="text-xl font-bold text-white mb-2">Check your email</h2>
                       <p className="text-sm font-mono" style={{ color: `${accent}88` }}>
                         We sent a verification link to
                       </p>
-                      <p className="text-sm font-semibold mt-1" style={{ color: accent }}>
-                        {email}
-                      </p>
+                      <p className="text-sm font-semibold mt-1" style={{ color: accent }}>{email}</p>
                     </div>
-
-                    <div
-                      className="rounded-xl border p-4 text-left space-y-1.5"
-                      style={{ borderColor: `${accent}22`, backgroundColor: `${accent}08` }}
-                    >
+                    <div className="rounded-xl border p-4 text-left space-y-1.5"
+                      style={{ borderColor: `${accent}22`, backgroundColor: `${accent}08` }}>
                       <p className="text-xs font-mono" style={{ color: `${accent}77` }}>
                         {'// '} Click the link in the email to activate your account.
                       </p>
@@ -151,11 +149,7 @@ export default function SignupPage() {
                         {'// '} Check your spam folder if you don't see it within a minute.
                       </p>
                     </div>
-
-                    <div
-                      className="pt-3"
-                      style={{ borderTop: `1px solid ${accent}15` }}
-                    >
+                    <div className="pt-3" style={{ borderTop: `1px solid ${accent}15` }}>
                       <p className="text-sm font-mono text-gray-500">
                         Wrong email?{' '}
                         <button
@@ -213,10 +207,86 @@ export default function SignupPage() {
                         style={{ background: 'rgba(0,0,0,0.5)', borderColor: `${accent}25` }} />
                     </div>
 
+                    {/* ── Policy agreement checkbox ── */}
+                    <motion.div
+                      animate={termsError ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                      transition={{ duration: 0.35 }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => { setAgreedToTerms(prev => !prev); setTermsError(false) }}
+                        className="flex items-start gap-3 w-full text-left"
+                        aria-checked={agreedToTerms}
+                        role="checkbox"
+                      >
+                        {/* Checkbox box */}
+                        <span
+                          className="mt-0.5 shrink-0 flex items-center justify-center rounded transition-all duration-200"
+                          style={{
+                            width:           18,
+                            height:          18,
+                            border:          `1.5px solid ${termsError ? '#F87171' : agreedToTerms ? accent : `${accent}45`}`,
+                            backgroundColor: agreedToTerms ? `${accent}20` : 'rgba(0,0,0,0.4)',
+                            boxShadow:       termsError
+                              ? '0 0 0 3px rgba(248,113,113,0.18)'
+                              : agreedToTerms
+                                ? `0 0 0 3px ${accent}20`
+                                : 'none',
+                          }}
+                        >
+                          {agreedToTerms && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M1.5 5L4 7.5L8.5 2.5" stroke={accent} strokeWidth="1.8"
+                                strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          )}
+                        </span>
+
+                        {/* Text */}
+                        <span className="text-xs font-mono leading-relaxed" style={{
+                          color: termsError ? '#F87171' : 'rgba(255,255,255,0.5)',
+                          transition: 'color 200ms ease',
+                        }}>
+                          {termsError
+                            ? 'Please agree to the policies before creating an account.'
+                            : <>
+                                I have read and agree to the{' '}
+                                <Link href="/terms" onClick={e => e.stopPropagation()}
+                                  className="underline underline-offset-2"
+                                  style={{ color: accent }}>
+                                  Terms of Service
+                                </Link>
+                                {', '}
+                                <Link href="/privacy" onClick={e => e.stopPropagation()}
+                                  className="underline underline-offset-2"
+                                  style={{ color: accent }}>
+                                  Privacy Policy
+                                </Link>
+                                {', and '}
+                                <Link href="/cookies" onClick={e => e.stopPropagation()}
+                                  className="underline underline-offset-2"
+                                  style={{ color: accent }}>
+                                  Cookies Policy
+                                </Link>
+                              </>
+                          }
+                        </span>
+                      </button>
+                    </motion.div>
+
+                    {/* Create Account button — visually dims when policies not agreed */}
                     <Button
-                      className="w-full h-11 font-mono font-bold text-black transition-all hover:scale-[1.02] active:scale-[0.98]"
-                      style={{ background: accent, boxShadow: `0 0 25px ${accent}40` }}
-                      onClick={handleSignup} disabled={loading}>
+                      className="w-full h-11 font-mono font-bold text-black"
+                      style={{
+                        background:  agreedToTerms ? accent : `${accent}55`,
+                        boxShadow:   agreedToTerms ? `0 0 25px ${accent}40` : 'none',
+                        opacity:     agreedToTerms ? 1 : 0.55,
+                        cursor:      agreedToTerms ? 'pointer' : 'default',
+                        transition:  'all 220ms ease',
+                      }}
+                      onClick={handleSignup}
+                      disabled={loading}
+                    >
                       {loading ? 'Processing...' : 'Create Account'}
                     </Button>
 

@@ -219,7 +219,7 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
     <ThemeCtx.Provider value={THEMES[activeTheme]}>
       <div
         ref={shellRef}
-        className="min-h-screen text-white font-sans selection:bg-white/20"
+        className="min-h-screen overflow-x-hidden text-white font-sans selection:bg-white/20"
         style={{
           background:
             `radial-gradient(circle at 8% 0%, ${accent}52 0%, transparent 48%),` +
@@ -466,7 +466,7 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
                   // Desktop: always visible, static in flow
                   'lg:relative lg:translate-x-0 lg:flex lg:shrink-0',
                   // Mobile: fixed drawer that slides in/out
-                  'fixed inset-y-0 left-0 z-40 flex flex-col border-r',
+                  'fixed inset-y-0 left-0 z-40 flex flex-col border-r overflow-x-hidden',
                   // Width
                   'w-64',
                   // Mobile open/closed

@@ -66,8 +66,12 @@
     // ── Measure button on open so fixed panel aligns correctly ───────────────
     const handleOpenDropdown = () => {
       if (!dropdownOpen && btnRef.current) {
-        const r = btnRef.current.getBoundingClientRect()
-        setBtnRect({ top: r.bottom + 10, left: r.left })
+        const r        = btnRef.current.getBoundingClientRect()
+        const isMobile = window.innerWidth < 640
+        setBtnRect({
+          top:  r.bottom + 10,
+          left: isMobile ? Math.max(12, (window.innerWidth - 288) / 2) : r.left,
+        })
       }
       setDropdownOpen(prev => !prev)
     }
@@ -77,8 +81,12 @@
       if (!dropdownOpen) return
       const reposition = () => {
         if (btnRef.current) {
-          const r = btnRef.current.getBoundingClientRect()
-          setBtnRect({ top: r.bottom + 10, left: r.left })
+          const r        = btnRef.current.getBoundingClientRect()
+          const isMobile = window.innerWidth < 640
+          setBtnRect({
+            top:  r.bottom + 10,
+            left: isMobile ? Math.max(12, (window.innerWidth - 288) / 2) : r.left,
+          })
         }
       }
       window.addEventListener('scroll', reposition, { passive: true })
@@ -393,7 +401,8 @@
                 <Link
                   key={label}
                   href={href}
-                  className="rounded-xl px-3.5 py-2 text-sm font-medium"
+                  // Hidden on mobile — not enough room alongside the CTA button
+                  className="hidden sm:block rounded-xl px-3.5 py-2 text-sm font-medium"
                   style={{
                     color:           'rgba(255,255,255,0.62)',
                     transition:      'color 180ms ease, background-color 180ms ease',
@@ -413,7 +422,8 @@
               ))}
               <Link
                 href="/signup"
-                className="ml-2 rounded-xl border px-4 py-2 text-sm font-medium"
+                // Tighter padding on mobile so it fits; normal padding on sm+
+                className="ml-1 sm:ml-2 rounded-xl border px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium"
                 style={{
                   borderColor:     `${accent}88`,
                   backgroundColor: `${accent}18`,

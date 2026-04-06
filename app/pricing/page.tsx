@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clock } from 'lucide-react'
+import Link from 'next/link'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
 import { THEMES, ThemePicker } from '@/components/ThemeChooserBar'
 import { usePersistedTheme } from '@/hooks/usePersistedTheme'
@@ -22,7 +23,7 @@ const TIERS: PricingTier[] = [
       '7-day log history',
     ],
     cta:  'Get started free',
-    href: '/dashboard',   // proxy.ts handles the rest: logged in → dashboard, guest → /login
+    href: '/dashboard',
   },
   {
     name:        'Pro',
@@ -56,10 +57,21 @@ export default function PricingPage() {
   const [frequency, setFrequency]       = useState('monthly')
   const [showComingSoon, setShowComingSoon] = useState(false)
 
+  // ── Billing policy agreement ─────────────────────────────────────────────
+  const [agreedToBilling, setAgreedToBilling] = useState(false)
+  const [billingError, setBillingError]       = useState(false)
+
   const theme = THEMES[previewTheme ?? activeTheme]
+  const accent = theme.accent
   const days  = daysUntilLaunch()
 
   function handleUpgrade() {
+    // Must agree to billing policy before proceeding
+    if (!agreedToBilling) {
+      setBillingError(true)
+      setTimeout(() => setBillingError(false), 2800)
+      return
+    }
     setShowComingSoon(true)
     setTimeout(() => setShowComingSoon(false), 3500)
   }
@@ -70,7 +82,7 @@ export default function PricingPage() {
 
       <div className="fixed inset-0 pointer-events-none" style={{
         background:
-          `radial-gradient(circle at 15% 0%, ${theme.accent}28 0%, transparent 50%),` +
+          `radial-gradient(circle at 15% 0%, ${accent}28 0%, transparent 50%),` +
           `radial-gradient(circle at 85% 100%, ${theme.palette[1]}60 0%, transparent 45%)`,
         zIndex: 1,
       }} />
@@ -93,10 +105,10 @@ export default function PricingPage() {
             className="fixed top-5 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-5 py-3 rounded-2xl border font-mono text-sm"
             style={{
               background:     'rgba(0,0,0,0.88)',
-              borderColor:    `${theme.accent}55`,
-              color:          theme.accent,
+              borderColor:    `${accent}55`,
+              color:          accent,
               backdropFilter: 'blur(16px)',
-              boxShadow:      `0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px ${theme.accent}22`,
+              boxShadow:      `0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px ${accent}22`,
             }}
           >
             <Clock className="w-4 h-4 shrink-0" />
@@ -118,8 +130,8 @@ export default function PricingPage() {
               transition={{ delay: 0.1 }}
               className="flex items-center justify-center gap-2 mb-6"
             >
-              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: theme.accent }} />
-              <span className="font-mono text-lg font-bold" style={{ color: theme.accent }}>CronWatch</span>
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: accent }} />
+              <span className="font-mono text-lg font-bold" style={{ color: accent }}>CronWatch</span>
             </motion.div>
 
             <h1 className="text-4xl md:text-5xl font-bold leading-tight">Simple, honest pricing</h1>
@@ -128,7 +140,7 @@ export default function PricingPage() {
             <div className="flex justify-center mt-6">
               <div
                 className="flex rounded-full p-1"
-                style={{ backgroundColor: `${theme.palette[1]}AA`, border: `1px solid ${theme.accent}33` }}
+                style={{ backgroundColor: `${theme.palette[1]}AA`, border: `1px solid ${accent}33` }}
               >
                 {FREQUENCIES.map(freq => (
                   <Tab
@@ -159,7 +171,80 @@ export default function PricingPage() {
             ))}
           </motion.div>
 
-          <p className="text-center font-mono text-xs mt-2" style={{ color: `${theme.accent}100` }}>
+          {/* ── Billing policy agreement — required before upgrading to Pro ── */}
+          <motion.div
+            className="mt-6 flex justify-center"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.45 }}
+          >
+            <motion.div
+              animate={billingError ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+              transition={{ duration: 0.35 }}
+              className="rounded-xl border px-4 py-3 max-w-sm w-full"
+              style={{
+                borderColor:     billingError ? 'rgba(248,113,113,0.5)' : `${accent}25`,
+                backgroundColor: billingError ? 'rgba(248,113,113,0.06)' : `${theme.palette[1]}60`,
+                backdropFilter:  'blur(12px)',
+                transition:      'border-color 200ms ease, background-color 200ms ease',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => { setAgreedToBilling(prev => !prev); setBillingError(false) }}
+                className="flex items-start gap-3 w-full text-left"
+                aria-checked={agreedToBilling}
+                role="checkbox"
+              >
+                {/* Checkbox box */}
+                <span
+                  className="mt-0.5 shrink-0 flex items-center justify-center rounded transition-all duration-200"
+                  style={{
+                    width:           18,
+                    height:          18,
+                    border:          `1.5px solid ${billingError ? '#F87171' : agreedToBilling ? accent : `${accent}45`}`,
+                    backgroundColor: agreedToBilling ? `${accent}20` : 'rgba(0,0,0,0.4)',
+                    boxShadow:       billingError
+                      ? '0 0 0 3px rgba(248,113,113,0.18)'
+                      : agreedToBilling
+                        ? `0 0 0 3px ${accent}20`
+                        : 'none',
+                  }}
+                >
+                  {agreedToBilling && (
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M1.5 5L4 7.5L8.5 2.5" stroke={accent} strokeWidth="1.8"
+                        strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </span>
+
+                {/* Text */}
+                <span className="text-xs font-mono leading-relaxed" style={{
+                  color: billingError ? '#F87171' : 'rgba(255,255,255,0.5)',
+                  transition: 'color 200ms ease',
+                }}>
+                  {billingError
+                    ? 'Please agree to the Payment & Billing Policy before upgrading.'
+                    : <>
+                        I have read and agree to the{' '}
+                        <Link
+                          href="/billing"
+                          onClick={e => e.stopPropagation()}
+                          className="underline underline-offset-2"
+                          style={{ color: accent }}
+                        >
+                          Payment &amp; Billing Policy
+                        </Link>
+                        {' '}before submitting payment.
+                      </>
+                  }
+                </span>
+              </button>
+            </motion.div>
+          </motion.div>
+
+          <p className="text-center font-mono text-xs mt-4" style={{ color: `${accent}88` }}> 
             All plans include a 14-day money-back guarantee · No hidden fees
           </p>
         </motion.div>
