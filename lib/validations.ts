@@ -33,6 +33,27 @@ export const signupSchema = z.object({
     .regex(/[0-9]/, 'Must contain at least one number'),
 })
 
+// ---- Webhook URL (SSRF-safe) ----
+const BLOCKED_HOSTNAMES = ['localhost', '127.0.0.1', '0.0.0.0', '::1']
+const BLOCKED_PREFIXES  = ['10.', '192.168.', '172.16.', '172.17.', '169.254.']
+
+const webhookUrlSchema = z
+  .string()
+  .max(500, 'URL too long')
+  .url('Invalid URL format')
+  .refine(val => {
+    try {
+      const url = new URL(val)
+      // HTTPS only — no http, ftp, file, etc.
+      if (url.protocol !== 'https:') return false
+      // Block private / loopback / link-local ranges (SSRF prevention)
+      if (BLOCKED_HOSTNAMES.includes(url.hostname)) return false
+      if (BLOCKED_PREFIXES.some(p => url.hostname.startsWith(p))) return false
+      return true
+    } catch { return false }
+  }, 'Webhook must be a valid public HTTPS URL')
+  .optional()
+
 // ---- Monitor ----
 export const createMonitorSchema = z.object({
   name: z
@@ -62,6 +83,8 @@ export const createMonitorSchema = z.object({
     .email('Invalid email format')
     .trim()
     .toLowerCase(),
+
+  webhook_url: webhookUrlSchema,
 })
 
 // ---- Ping ID ----

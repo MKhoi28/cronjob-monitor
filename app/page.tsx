@@ -805,6 +805,7 @@
                     { label: 'Terms of Service', href: '/terms'   },
                     { label: 'Privacy Policy',   href: '/privacy' },
                     { label: 'Cookie Policy',    href: '/cookies' },
+                    { label: 'Payment & Billing',    href: '/billing' },
                   ].map(({ label, href }) => (
                     <div key={label}>
                       <a href={href} style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', transition: 'color 160ms ease' }}

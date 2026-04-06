@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from 'react'
 import { motion } from "framer-motion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { Clock, Plus, TerminalSquare } from "lucide-react";
 import { useAppTheme } from "@/components/DashboardShell";
-
+import { ViewAllModal } from '@/components/ViewAllModal'
 type Monitor = any;
 
 const containerVariants: any = {
@@ -21,7 +22,7 @@ export default function DashboardClient({ monitors }: { monitors: Monitor[] }) {
   const theme = useAppTheme();
   const [base, panel] = theme.palette;
   const accent        = theme.accent;
-
+  const [showAll, setShowAll] = useState(false)
   const healthyCount = monitors?.filter(m => m.status === 'healthy').length ?? 0;
   const downCount    = monitors?.filter(m => m.status === 'down').length    ?? 0;
   const totalCount   = monitors?.length ?? 0;
@@ -35,14 +36,6 @@ export default function DashboardClient({ monitors }: { monitors: Monitor[] }) {
           <h1 className="text-2xl font-semibold tracking-tight text-white mb-1">Metrics</h1>
           <p className="text-sm" style={{ color: `${accent}88` }}>System telemetry and active routing targets.</p>
         </div>
-        <Link href="/monitors/new">
-          <button
-            className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium"
-            style={{ backgroundColor: accent, color: base, boxShadow: `0 8px 24px ${accent}44` }}
-          >
-            <Plus className="w-3.5 h-3.5" /> Add Target
-          </button>
-        </Link>
       </motion.div>
 
       {/* ── Stat cards ── */}
@@ -67,7 +60,7 @@ export default function DashboardClient({ monitors }: { monitors: Monitor[] }) {
           style={{ borderColor: `${accent}44`, backgroundColor: `${panel}88`, boxShadow: `0 16px 50px ${base}88, inset 0 1px 0 rgba(255,255,255,0.07)` }}>
           <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${accent}22` }}>
             <h3 className="text-sm font-semibold text-white">Recent Pings</h3>
-            <span className="text-xs cursor-pointer hover:underline" style={{ color: `${accent}88` }}>View all</span>
+            <span className="text-xs cursor-pointer hover:underline" style={{ color: `${accent}88` }} onClick={() => setShowAll(true)}>View all</span>
           </div>
 
           {!monitors || monitors.length === 0 ? (
@@ -132,6 +125,14 @@ export default function DashboardClient({ monitors }: { monitors: Monitor[] }) {
           )}
         </div>
       </motion.div>
+      {showAll && (
+        <ViewAllModal
+          accent={accent}
+          panel={panel}
+          base={base}
+          onClose={() => setShowAll(false)}
+        />
+      )}
     </motion.div>
   );
 }

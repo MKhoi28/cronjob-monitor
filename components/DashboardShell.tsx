@@ -38,6 +38,9 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
   const [activeTheme, setActiveTheme]   = useState(0)
   const [hoveredTheme, setHoveredTheme] = useState<number | null>(null)
 
+  // ── Mobile sidebar drawer ────────────────────────────────────────────────
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+
   // ── Settings panel (bottom of sidebar) ──────────────────────────────────
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [themeDropOpen, setThemeDropOpen] = useState(false)
@@ -51,25 +54,14 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
   const orbTwoRef     = useRef<HTMLDivElement>(null)
   const orbThreeRef   = useRef<HTMLDivElement>(null)
 
-  const router   = useRouter()
+  const router = useRouter()
 
   const displayIndex = hoveredTheme !== null ? hoveredTheme : activeTheme
   const theme        = useMemo(() => THEMES[displayIndex], [displayIndex])
   const [base, panel, edge] = theme.palette
   const accent = theme.accent
 
-
   // Hydrate theme from localStorage on mount
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('cw-theme')
-      if (saved !== null) {
-        const idx = Number(saved)
-        if (idx >= 0 && idx < THEMES.length) setActiveTheme(idx)
-      }
-    } catch {}
-  }, [])
-  // Read saved theme on mount so landing page matches dashboard choice
   useEffect(() => {
     try {
       const saved = localStorage.getItem('cw-theme')
@@ -82,14 +74,35 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
       }
     } catch {}
   }, [])
+
+  // ── Close mobile sidebar when screen grows to desktop ───────────────────
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) setMobileSidebarOpen(false)
+    }
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
   // ── Open settings panel, anchor above the button ────────────────────────
   const handleOpenSettings = () => {
     if (!settingsOpen && settingsBtnRef.current) {
-      const r = settingsBtnRef.current.getBoundingClientRect()
-      setPanelPos({
-        bottom: window.innerHeight - r.top + 10,
-        left:   r.left,
-      })
+      const r   = settingsBtnRef.current.getBoundingClientRect()
+      const isMobile = window.innerWidth < 1024
+
+      if (isMobile) {
+        // On mobile: centre the panel horizontally, anchor above button
+        setPanelPos({
+          bottom: window.innerHeight - r.top + 10,
+          left:   Math.max(12, (window.innerWidth - 272) / 2),
+        })
+      } else {
+        setPanelPos({
+          bottom: window.innerHeight - r.top + 10,
+          left:   r.left,
+        })
+      }
     }
     setSettingsOpen(prev => !prev)
     if (settingsOpen) {
@@ -119,8 +132,12 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
     if (!settingsOpen) return
     const reposition = () => {
       if (settingsBtnRef.current) {
-        const r = settingsBtnRef.current.getBoundingClientRect()
-        setPanelPos({ bottom: window.innerHeight - r.top + 10, left: r.left })
+        const r        = settingsBtnRef.current.getBoundingClientRect()
+        const isMobile = window.innerWidth < 1024
+        setPanelPos({
+          bottom: window.innerHeight - r.top + 10,
+          left:   isMobile ? Math.max(12, (window.innerWidth - 272) / 2) : r.left,
+        })
       }
     }
     window.addEventListener('resize', reposition)
@@ -128,9 +145,6 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
   }, [settingsOpen])
 
   // ── Sign out ─────────────────────────────────────────────────────────────
-  // createClient is created *inside* the handler — not at component top level.
-  // Instantiating it on render triggers an automatic session-refresh fetch
-  // which throws "Failed to fetch" in dev when Supabase isn't immediately ready.
   async function handleSignOut() {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -139,6 +153,8 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
   }
 
   // ── GSAP: entrance + orbs + mouse parallax + cursor glow ────────────────
+  // Cursor glow and mouse parallax are skipped on touch devices — they rely
+  // on mousemove which doesn't fire reliably on phones/tablets.
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduceMotion) return
@@ -156,6 +172,10 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
       gsap.to(orbTwoRef.current,   { y: -30, x: -12, duration: 8.3, repeat: -1, yoyo: true, ease: 'sine.inOut' })
       gsap.to(orbThreeRef.current, { y: -18, x:   8, duration: 9.1, repeat: -1, yoyo: true, ease: 'sine.inOut' })
     }, shellRef)
+
+    // Only wire up mouse effects on pointer (non-touch) devices
+    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+    if (isTouch) return () => ctx.revert()
 
     const onMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth  - 0.5) * 20
@@ -192,7 +212,6 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
     setActiveTheme(index)
     setHoveredTheme(null)
     setThemeDropOpen(false)
-    // persist so landing page and all app pages share the same choice
     try { localStorage.setItem('cw-theme', String(index)) } catch {}
   }
 
@@ -210,7 +229,7 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
           transition: 'background 360ms cubic-bezier(0.23, 1, 0.32, 1)',
         }}
       >
-        {/* Cursor glow */}
+        {/* Cursor glow — hidden on touch devices via pointer-events:none + opacity:0 */}
         <div ref={cursorGlowRef}
           className="pointer-events-none fixed left-0 top-0 h-60 w-60 rounded-full opacity-0 blur-[70px]"
           style={{ background: `${accent}4D`, zIndex: 2 }}
@@ -223,7 +242,16 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
           <div ref={orbThreeRef} className="shell-parallax-soft absolute bottom-[6%] left-[33%] h-80 w-80 rounded-full blur-[130px]" style={{ background: `${edge}44`,   transition: 'background 360ms ease' }} />
         </div>
 
-        {/* ── Settings panel — fixed above the bottom button, escapes all stacking contexts ── */}
+        {/* ── Mobile sidebar backdrop ── */}
+        {mobileSidebarOpen && (
+          <div
+            className="fixed inset-0 z-30 lg:hidden"
+            style={{ backgroundColor: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(2px)' }}
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+        )}
+
+        {/* ── Settings panel — fixed, escapes all stacking contexts ── */}
         {settingsOpen && panelPos && (
           <div
             ref={settingsPanelRef}
@@ -268,11 +296,9 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
                 }}
               >
                 <div className="flex items-center gap-2.5">
-                  {/* Active swatch */}
                   <span className="rounded-full shrink-0" style={{ width: 10, height: 10, backgroundColor: THEMES[activeTheme].accent, boxShadow: `0 0 6px ${THEMES[activeTheme].accent}99`, border: '1px solid rgba(255,255,255,0.2)' }} />
                   <span className="text-sm font-medium text-white">Themes</span>
                 </div>
-                {/* Chevron */}
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
                   style={{ transform: themeDropOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 240ms cubic-bezier(0.23,1,0.32,1)', opacity: 0.6 }}>
                   <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -350,9 +376,9 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
         {/* ── Page structure ── */}
         <div className="relative shell-pulse flex flex-col min-h-screen" style={{ zIndex: 1 }}>
 
-          {/* ── Slim top nav: Home button on left, wordmark centre ── */}
+          {/* ── Top nav ── */}
           <header
-            className="shell-nav sticky top-0 z-40 flex items-center justify-between px-5 py-3 backdrop-blur-xl border-b"
+            className="shell-nav sticky top-0 z-40 flex items-center justify-between px-4 sm:px-5 py-3 backdrop-blur-xl border-b"
             style={{
               borderColor:     `${accent}33`,
               backgroundColor: `${panel}A0`,
@@ -391,20 +417,69 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
               CRONWATCH
             </span>
 
-            {/* Right spacer — mirrors Home button width for centering */}
-            <div className="flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs opacity-0 pointer-events-none select-none">
-              Home
+            {/* Right side: hamburger on mobile, spacer on desktop */}
+            <div className="flex items-center">
+              {/* Hamburger — only visible on mobile when there's a sidebar */}
+              {sidebar && (
+                <button
+                  type="button"
+                  onClick={() => setMobileSidebarOpen(prev => !prev)}
+                  className="lg:hidden flex items-center justify-center rounded-xl border p-2"
+                  style={{
+                    borderColor:     mobileSidebarOpen ? `${accent}88` : `${accent}44`,
+                    backgroundColor: mobileSidebarOpen ? `${panel}CC` : `${panel}60`,
+                    color:           `${accent}CC`,
+                    transition:      'all 200ms cubic-bezier(0.23, 1, 0.32, 1)',
+                  }}
+                  aria-label="Toggle sidebar"
+                >
+                  {mobileSidebarOpen ? (
+                    // X icon
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M2 2L12 12M12 2L2 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+                    </svg>
+                  ) : (
+                    // Hamburger icon
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M2 4h10M2 7h10M2 10h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+                    </svg>
+                  )}
+                </button>
+              )}
+
+              {/* Spacer — mirrors Home button on desktop so wordmark stays centred */}
+              <div
+                className={`${sidebar ? 'hidden lg:flex' : 'flex'} items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs opacity-0 pointer-events-none select-none`}
+              >
+                Home
+              </div>
             </div>
           </header>
 
           {/* ── Body: sidebar + main ── */}
-          <div className="flex flex-1">
+          <div className="flex flex-1 relative">
 
-            {/* Sidebar slot + bottom settings row */}
+            {/* Sidebar slot — drawer on mobile, static column on desktop */}
             {sidebar && (
               <aside
-                className="shrink-0 flex flex-col border-r"
-                style={{ borderColor: `${accent}22`, backgroundColor: `${panel}55` }}
+                className={[
+                  // Desktop: always visible, static in flow
+                  'lg:relative lg:translate-x-0 lg:flex lg:shrink-0',
+                  // Mobile: fixed drawer that slides in/out
+                  'fixed inset-y-0 left-0 z-40 flex flex-col border-r',
+                  // Width
+                  'w-64',
+                  // Mobile open/closed
+                  mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full',
+                  // Smooth slide
+                  'transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]',
+                ].join(' ')}
+                style={{
+                  borderColor:     `${accent}22`,
+                  backgroundColor: `${panel}EE`,
+                  // On mobile the sidebar sits on top of content; on desktop it's in-flow
+                  top: 0,
+                }}
               >
                 {/* Sidebar content from DashboardSidebar */}
                 <div className="flex-1 overflow-y-auto">
@@ -416,7 +491,6 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
                   className="flex items-center gap-2 px-4 py-3 border-t"
                   style={{ borderColor: `${accent}22` }}
                 >
-                  {/* Settings button (the rectangle in the sketch) */}
                   <button
                     ref={settingsBtnRef}
                     type="button"
@@ -441,7 +515,6 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
                       }
                     }}
                   >
-                    {/* Gear icon */}
                     <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                       <path d="M6.5 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" stroke="currentColor" strokeWidth="1.4"/>
                       <path d="M10.5 6.5h.5M2 6.5h.5M6.5 2v.5M6.5 10v.5M9.3 3.7l-.35.35M4.05 8.95l-.35.35M9.3 9.3l-.35-.35M4.05 4.05l-.35-.35" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
@@ -449,7 +522,6 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
                     Settings
                   </button>
 
-                  {/* Theme swatch circle (the circle in the sketch) */}
                   <button
                     type="button"
                     onClick={handleOpenSettings}
@@ -469,7 +541,7 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
             )}
 
             {/* Main content */}
-            <main className="shell-content flex-1 px-4 sm:px-10 py-8 overflow-x-hidden min-h-0">
+            <main className="shell-content flex-1 px-4 sm:px-10 py-8 overflow-x-hidden min-h-0 w-full">
               {children}
             </main>
           </div>

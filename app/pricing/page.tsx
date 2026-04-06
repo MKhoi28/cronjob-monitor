@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clock } from 'lucide-react'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
@@ -22,7 +21,8 @@ const TIERS: PricingTier[] = [
       'Dead-man switch',
       '7-day log history',
     ],
-    cta: 'Get started free',
+    cta:  'Get started free',
+    href: '/dashboard',   // proxy.ts handles the rest: logged in → dashboard, guest → /login
   },
   {
     name:        'Pro',
@@ -56,8 +56,8 @@ export default function PricingPage() {
   const [frequency, setFrequency]       = useState('monthly')
   const [showComingSoon, setShowComingSoon] = useState(false)
 
-  const theme  = THEMES[previewTheme ?? activeTheme]
-  const days   = daysUntilLaunch()
+  const theme = THEMES[previewTheme ?? activeTheme]
+  const days  = daysUntilLaunch()
 
   function handleUpgrade() {
     setShowComingSoon(true)
@@ -68,7 +68,6 @@ export default function PricingPage() {
     <div className="min-h-screen relative overflow-hidden text-white"
       style={{ background: theme.palette[0] }}>
 
-      {/* Gradient overlay */}
       <div className="fixed inset-0 pointer-events-none" style={{
         background:
           `radial-gradient(circle at 15% 0%, ${theme.accent}28 0%, transparent 50%),` +
@@ -78,7 +77,6 @@ export default function PricingPage() {
 
       <BackgroundAnimation theme={theme} />
 
-      {/* Theme picker */}
       <ThemePicker
         className="fixed left-5 top-5 z-50"
         activeTheme={activeTheme}
@@ -86,13 +84,6 @@ export default function PricingPage() {
         onPreviewChange={setPreviewTheme}
       />
 
-      {/* Back to home */}
-      <Link href="/" className="fixed top-5 right-5 z-50 font-mono text-xs transition-colors"
-        style={{ color: `${theme.accent}99` }}>
-        {'<'} back to home
-      </Link>
-
-      {/* Coming soon toast */}
       <AnimatePresence>
         {showComingSoon && (
           <motion.div
@@ -114,7 +105,6 @@ export default function PricingPage() {
         )}
       </AnimatePresence>
 
-      {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-24">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -122,7 +112,6 @@ export default function PricingPage() {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="w-full max-w-4xl"
         >
-          {/* Header */}
           <div className="text-center mb-12 space-y-4">
             <motion.div
               initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
@@ -136,7 +125,6 @@ export default function PricingPage() {
             <h1 className="text-4xl md:text-5xl font-bold leading-tight">Simple, honest pricing</h1>
             <p className="text-white/60 font-mono text-sm">Start free. Upgrade when you need more.</p>
 
-            {/* Frequency toggle */}
             <div className="flex justify-center mt-6">
               <div
                 className="flex rounded-full p-1"
@@ -155,7 +143,6 @@ export default function PricingPage() {
             </div>
           </div>
 
-          {/* Cards */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -172,13 +159,8 @@ export default function PricingPage() {
             ))}
           </motion.div>
 
-          {/* Coming soon note */}
-          <p className="text-center font-mono text-xs mt-4" style={{ color: `${theme.accent}44` }}>
-            // pro plan launches May 28 · {days} days away
-          </p>
-
-          <p className="text-center font-mono text-xs mt-2" style={{ color: `${theme.accent}28` }}>
-            // All plans include a 14-day money-back guarantee · No hidden fees
+          <p className="text-center font-mono text-xs mt-2" style={{ color: `${theme.accent}100` }}>
+            All plans include a 14-day money-back guarantee · No hidden fees
           </p>
         </motion.div>
       </div>

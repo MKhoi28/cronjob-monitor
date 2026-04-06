@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Clock, Plus, Search, TerminalSquare, Zap, ExternalLink } from "lucide-react";
+import { Clock, Copy, Check, Plus, Search, TerminalSquare, Zap, ExternalLink } from "lucide-react";
 import { useAppTheme } from "@/components/DashboardShell";
 import AnalyzeModal from "@/components/AnalyzeModal";
 
@@ -34,7 +34,8 @@ export default function MonitorsClient({
   const accent        = theme.accent;
   const [search, setSearch] = useState("");
 
-  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [copiedBadgeId, setCopiedBadgeId] = useState<string | null>(null)
+  const [copiedMonitorId, setCopiedMonitorId] = useState<string | null>(null)
 
   // AI Analyst state
   const [analyzingMonitor, setAnalyzingMonitor] = useState<Monitor | null>(null)
@@ -49,8 +50,14 @@ export default function MonitorsClient({
     const url = `${window.location.origin}/status/${monitorId}`
     const badge = `[![monitor status](${window.location.origin}/api/badge/${monitorId})](${url})`
     navigator.clipboard.writeText(badge)
-    setCopiedId(monitorId)
-    setTimeout(() => setCopiedId(null), 2000)
+    setCopiedBadgeId(monitorId)
+    setTimeout(() => setCopiedBadgeId(null), 2000)
+  }
+
+  function copyMonitorId(monitorId: string) {
+    navigator.clipboard.writeText(monitorId)
+    setCopiedMonitorId(monitorId)
+    setTimeout(() => setCopiedMonitorId(null), 2000)
   }
 
   return (
@@ -127,8 +134,8 @@ export default function MonitorsClient({
                 <Table>
                   <TableHeader>
                     <TableRow className="border-0 hover:bg-transparent" style={{ backgroundColor: `${panel}60` }}>
-                      {['Name', 'Status', 'Interval', 'Last Ping', 'Ping URL', ''].map((h, i) => (
-                        <TableHead key={i} className={`text-[11px] font-medium tracking-[0.18em] py-3 ${i === 5 ? 'text-right' : ''}`}
+                      {['Name', 'Status', 'Interval', 'Last Ping', 'Monitor ID', 'Ping URL', ''].map((h, i) => (
+                        <TableHead key={i} className={`text-[11px] font-medium tracking-[0.18em] py-3 ${i === 6 ? 'text-right' : ''}`}
                           style={{ color: `${accent}77` }}>{h.toUpperCase()}</TableHead>
                       ))}
                     </TableRow>
@@ -171,6 +178,31 @@ export default function MonitorsClient({
                             : 'Waiting...'}
                         </TableCell>
 
+                        {/* Monitor ID — truncated + copy */}
+                        <TableCell className="py-3">
+                          <button
+                            onClick={() => copyMonitorId(monitor.id)}
+                            className="group flex items-center gap-1.5 font-mono text-[11px] px-2 py-1 rounded-lg border transition-all hover:scale-105 active:scale-95"
+                            style={{
+                              color:           copiedMonitorId === monitor.id ? '#34D399' : `${accent}88`,
+                              borderColor:     copiedMonitorId === monitor.id ? 'rgba(52,211,153,0.3)' : `${accent}22`,
+                              backgroundColor: copiedMonitorId === monitor.id ? 'rgba(52,211,153,0.08)' : `${panel}AA`,
+                            }}
+                            title={monitor.id}
+                          >
+                            {copiedMonitorId === monitor.id
+                              ? <Check className="w-3 h-3 shrink-0" style={{ color: '#34D399' }} />
+                              : <Copy className="w-3 h-3 shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
+                            }
+                            <span>
+                              {copiedMonitorId === monitor.id
+                                ? 'copied!'
+                                : `${monitor.id.substring(0, 8)}…`
+                              }
+                            </span>
+                          </button>
+                        </TableCell>
+
                         {/* Ping URL */}
                         <TableCell className="py-3">
                           <code className="text-[11px] px-2 py-1 rounded font-mono"
@@ -204,13 +236,13 @@ export default function MonitorsClient({
                               onClick={() => copyBadge(monitor.id)}
                                className="flex items-center gap-1 text-xs font-mono font-medium px-2 py-1 rounded-lg border transition-all hover:scale-105"
                                style={{
-                                color:           copiedId === monitor.id ? '#34D399' : `${accent}66`,
-                                borderColor:     copiedId === monitor.id ? 'rgba(52,211,153,0.3)' : `${accent}18`,
-                                backgroundColor: copiedId === monitor.id ? 'rgba(52,211,153,0.08)' : 'transparent',
+                                color:           copiedBadgeId === monitor.id ? '#34D399' : `${accent}66`,
+                                borderColor:     copiedBadgeId === monitor.id ? 'rgba(52,211,153,0.3)' : `${accent}18`,
+                                backgroundColor: copiedBadgeId === monitor.id ? 'rgba(52,211,153,0.08)' : 'transparent',
                               }}
                               title="Copy badge markdown"
                               >
-                              {copiedId === monitor.id ? '✓ copied' : '⬡ badge'}
+                              {copiedBadgeId === monitor.id ? '✓ copied' : '⬡ badge'}
                             </button>
 
                             <a
