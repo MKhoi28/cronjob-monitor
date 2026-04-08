@@ -265,6 +265,174 @@ const posts: Record<string, {
     ),
     },
 
+    'how-to-monitor-cron-jobs': {
+    title: 'How to Monitor Cron Jobs and Get Alerts When They Fail',
+    date: 'April 8, 2026',
+    description: 'A step-by-step guide to adding cron job monitoring to any project in under 5 minutes using a ping URL.',
+    content: (
+        <div className="space-y-8">
+        <section>
+            <h2 className="text-xl font-bold text-white mb-3 font-mono border-l-2 border-orange-500 pl-4">
+            The Problem with Unmonitored Cron Jobs
+            </h2>
+            <p className="text-zinc-300 leading-relaxed">
+            Cron jobs fail silently. Unlike a crashed web server that throws errors immediately, a cron job that stops running just... disappears. No logs, no alerts, no indication anything is wrong — until your database hasn't been backed up in two weeks or your invoice emails stopped sending a month ago.
+            </p>
+            <p className="text-zinc-300 leading-relaxed mt-3">
+            The fix is dead simple: ping-based monitoring. Your job sends an HTTP request to a monitoring service on every successful run. If the ping stops arriving, you get alerted. This guide shows you how to set it up in under 5 minutes.
+            </p>
+        </section>
+
+        <section>
+            <h2 className="text-xl font-bold text-white mb-3 font-mono border-l-2 border-orange-500 pl-4">
+            Step 1 — Create a Free Monitor
+            </h2>
+            <p className="text-zinc-300 leading-relaxed">
+            Sign up for a free CronWatch account at <a href="https://crwatch.vercel.app/signup" className="text-orange-400 hover:underline">crwatch.vercel.app</a>. After signing in, click <strong className="text-white">New Monitor</strong> and fill in:
+            </p>
+            <ul className="mt-4 space-y-2 text-zinc-300 text-sm font-mono border border-zinc-700 rounded-lg p-4 bg-zinc-900">
+            <li>📌 <span className="text-zinc-400">Name:</span> something like "Daily DB Backup"</li>
+            <li>⏱ <span className="text-zinc-400">Schedule:</span> how often your job runs (e.g. every 24 hours)</li>
+            <li>🔔 <span className="text-zinc-400">Alert email:</span> where to send failure alerts</li>
+            </ul>
+            <p className="text-zinc-300 leading-relaxed mt-4">
+            After saving, you'll get a unique ping URL that looks like this:
+            </p>
+            <div className="rounded-lg border border-zinc-700 overflow-hidden mt-3">
+            <div className="bg-zinc-800 px-4 py-2 text-xs font-mono text-orange-400 border-b border-zinc-700">
+                Your ping URL
+            </div>
+            <pre className="bg-zinc-900 px-4 py-4 text-sm font-mono text-zinc-300 overflow-x-auto">
+                <code>https://crwatch.vercel.app/api/ping/YOUR_MONITOR_ID</code>
+            </pre>
+            </div>
+        </section>
+
+        <section>
+            <h2 className="text-xl font-bold text-white mb-4 font-mono border-l-2 border-orange-500 pl-4">
+            Step 2 — Add the Ping to Your Cron Job
+            </h2>
+            <p className="text-zinc-300 leading-relaxed mb-4">
+            Add one line at the end of your job script — after your logic runs successfully. If the job fails before reaching the ping, no ping is sent and CronWatch alerts you.
+            </p>
+
+            <div className="space-y-4">
+            {[
+                {
+                lang: 'Bash / Shell',
+                code: `#!/bin/bash
+    set -e  # Exit immediately if any command fails
+
+    # Your job logic
+    pg_dump mydb > /backups/mydb-$(date +%F).sql
+
+    # Ping CronWatch on success
+    curl -s https://crwatch.vercel.app/api/ping/YOUR_MONITOR_ID`,
+                },
+                {
+                lang: 'Node.js',
+                code: `async function runJob() {
+    // Your job logic
+    await backupDatabase()
+    await sendReports()
+
+    // Ping CronWatch on success
+    await fetch('https://crwatch.vercel.app/api/ping/YOUR_MONITOR_ID')
+    }
+
+    runJob().catch(console.error)`,
+                },
+                {
+                lang: 'Python',
+                code: `import requests
+
+    def run_job():
+        # Your job logic
+        backup_database()
+        send_reports()
+
+        # Ping CronWatch on success
+        requests.get('https://crwatch.vercel.app/api/ping/YOUR_MONITOR_ID')
+
+    run_job()`,
+                },
+                {
+                lang: 'Kubernetes CronJob (YAML)',
+                code: `apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+    name: db-backup
+    spec:
+    schedule: "0 2 * * *"
+    jobTemplate:
+        spec:
+        template:
+            spec:
+            containers:
+            - name: backup
+                image: your-backup-image
+                command:
+                - /bin/sh
+                - -c
+                - |
+                your_backup_script.sh &&
+                curl -s https://crwatch.vercel.app/api/ping/YOUR_MONITOR_ID
+            restartPolicy: OnFailure`,
+                },
+            ].map(({ lang, code }) => (
+                <div key={lang} className="rounded-lg overflow-hidden border border-zinc-700">
+                <div className="bg-zinc-800 px-4 py-2 text-xs font-mono text-orange-400 border-b border-zinc-700">
+                    {lang}
+                </div>
+                <pre className="bg-zinc-900 px-4 py-4 text-sm font-mono text-zinc-300 overflow-x-auto">
+                    <code>{code}</code>
+                </pre>
+                </div>
+            ))}
+            </div>
+        </section>
+
+        <section>
+            <h2 className="text-xl font-bold text-white mb-3 font-mono border-l-2 border-orange-500 pl-4">
+            Step 3 — Test It
+            </h2>
+            <p className="text-zinc-300 leading-relaxed">
+            Run your job once manually and check your CronWatch dashboard. You should see the monitor status flip to <span className="text-green-400 font-mono">UP</span> with a timestamp of the last successful ping. If you want to test the alert, just wait longer than the grace period without pinging — you'll get an email.
+            </p>
+        </section>
+
+        <section>
+            <h2 className="text-xl font-bold text-white mb-3 font-mono border-l-2 border-orange-500 pl-4">
+            Bonus — Share a Public Status Page
+            </h2>
+            <p className="text-zinc-300 leading-relaxed">
+            Every CronWatch monitor gets a public status page at <span className="font-mono text-orange-400">crwatch.vercel.app/status/YOUR_MONITOR_ID</span>. Share it with your team or clients so they can check job health without needing a login. You can also embed an SVG uptime badge directly in your README or docs.
+            </p>
+        </section>
+
+        <section>
+            <h2 className="text-xl font-bold text-white mb-3 font-mono border-l-2 border-orange-500 pl-4">
+            What Happens When a Job Fails?
+            </h2>
+            <p className="text-zinc-300 leading-relaxed">
+            When a ping doesn't arrive within the expected window, CronWatch sends you an email alert immediately. On the dashboard you'll also see the AI Failure Analyst — it analyzes the timing and pattern of missed pings and suggests likely causes, so you're not debugging blind.
+            </p>
+        </section>
+
+        <div className="mt-10 p-6 rounded-lg border border-orange-500/30 bg-orange-500/5">
+            <p className="text-white font-semibold mb-2">Set up monitoring in the next 5 minutes</p>
+            <p className="text-zinc-400 text-sm mb-4">Free forever. No credit card. Works with any language or scheduler.</p>
+            <a
+            href="https://crwatch.vercel.app/signup"
+            className="inline-block bg-orange-500 hover:bg-orange-400 text-black font-bold font-mono px-6 py-3 rounded-md transition-colors text-sm"
+            >
+            Try CronWatch Free →
+            </a>
+        </div>
+        </div>
+    ),
+    },
+
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {

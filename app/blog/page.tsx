@@ -8,7 +8,7 @@ export const metadata = {
 const posts = [
   {
     slug: 'best-free-cron-job-monitoring-tools',
-    title: 'Best Free Cron Job Monitoring Tools (2025)',
+    title: 'Best Free Cron Job Monitoring Tools (2026)',
     date: 'April 8, 2026',
     description: 'Compare the top free cron job monitoring tools — Healthchecks.io, Cronitor, and CronWatch — and find the best fit for your project.',
     tag: 'Comparison',
@@ -20,6 +20,14 @@ const posts = [
   date: 'April 8, 2026',
   description: 'Looking for a Healthchecks.io alternative? Compare the top cron job monitoring tools and find the best fit for your stack.',
   tag: 'Comparison',
+},
+
+{
+  slug: 'how-to-monitor-cron-jobs',
+  title: 'How to Monitor Cron Jobs and Get Alerts When They Fail',
+  date: 'April 8, 2026',
+  description: 'A step-by-step guide to adding cron job monitoring to any project in under 5 minutes using a ping URL.',
+  tag: 'Tutorial',
 },
 
 ]
