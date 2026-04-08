@@ -1,11 +1,23 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "CronWatch | Modern Cron Job Monitoring",
-  description: "Monitor your scheduled tasks 24/7 with CronWatch. Get alerted the moment something goes wrong.",
-};
-
+export const metadata = {
+  title: 'CronWatch — AI-Powered Cron Job Monitoring',
+  description: 'Monitor your cron jobs and scheduled tasks. Get instant alerts when jobs fail, with AI-powered failure analysis and public status pages.',
+  metadataBase: new URL('https://crwatch.vercel.app'),
+  openGraph: {
+    title: 'CronWatch — AI-Powered Cron Job Monitoring',
+    description: 'Get instant alerts when your cron jobs fail.',
+    url: 'https://crwatch.vercel.app',
+    siteName: 'CronWatch',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CronWatch — AI-Powered Cron Job Monitoring',
+    description: 'Get instant alerts when your cron jobs fail.',
+  },
+}
 // Tells mobile browsers to match the device width and never auto-zoom.
 // Without this, phones render at a desktop viewport and shrink everything down.
 export const viewport: Viewport = {
@@ -41,3 +53,4 @@ export default function RootLayout({
     </html>
   );
 }
+
