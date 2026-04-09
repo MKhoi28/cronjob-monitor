@@ -14,7 +14,7 @@ export async function updateDisplayName(name: string): Promise<{ success?: boole
     .eq('id', user.id)
 
   if (error) return { error: error.message }
-  revalidatePath('/settings')
+  revalidatePath('/accounts')
   return { success: true }
 }
 
@@ -32,7 +32,7 @@ export async function generateApiKey(): Promise<{ key?: string; error?: string }
     .upsert({ id: user.id, api_key: key })
 
   if (error) return { error: error.message }
-  revalidatePath('/settings')  
+  revalidatePath('/accounts')  
   return { key }
 }
 
@@ -47,6 +47,6 @@ export async function revokeApiKey(): Promise<{ success?: boolean; error?: strin
     .eq('id', user.id)
 
   if (error) return { error: error.message }
-  revalidatePath('/settings')
+  revalidatePath('/accounts')
   return { success: true }
 }

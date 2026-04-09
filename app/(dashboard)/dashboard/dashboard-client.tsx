@@ -7,6 +7,8 @@ import Link from "next/link";
 import { Clock, Plus, TerminalSquare } from "lucide-react";
 import { useAppTheme } from "@/components/DashboardShell";
 import { ViewAllModal } from '@/components/ViewAllModal'
+import WelcomeModal from '@/components/onboarding/WelcomeModal'
+import EmptyState from '@/components/onboarding/EmptyState'
 type Monitor = any;
 
 const containerVariants: any = {
@@ -26,10 +28,11 @@ export default function DashboardClient({ monitors }: { monitors: Monitor[] }) {
   const healthyCount = monitors?.filter(m => m.status === 'healthy').length ?? 0;
   const downCount    = monitors?.filter(m => m.status === 'down').length    ?? 0;
   const totalCount   = monitors?.length ?? 0;
-
+  const hasPinged = monitors?.some(m => m.last_ping_at !== null) ?? false
   return (
+    <>
+    <WelcomeModal />
     <motion.div className="max-w-6xl w-full space-y-6" variants={containerVariants} initial="hidden" animate="show">
-
       {/* ── Header ── */}
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -64,20 +67,7 @@ export default function DashboardClient({ monitors }: { monitors: Monitor[] }) {
           </div>
 
           {!monitors || monitors.length === 0 ? (
-            <div className="text-center py-16 px-6">
-              <div className="w-12 h-12 rounded-2xl border flex items-center justify-center mx-auto mb-4"
-                style={{ borderColor: `${accent}33`, backgroundColor: `${panel}88` }}>
-                <TerminalSquare className="w-5 h-5" style={{ color: `${accent}88` }} />
-              </div>
-              <p className="text-sm font-medium text-white mb-1">No monitors yet</p>
-              <p className="text-xs mb-4" style={{ color: `${accent}66` }}>Attach a target endpoint to start tracking.</p>
-              <Link href="/monitors/new">
-                <button className="rounded-xl px-4 py-2 text-xs font-medium"
-                  style={{ backgroundColor: accent, color: base }}>
-                  Create your first monitor
-                </button>
-              </Link>
-            </div>
+             <EmptyState accent={accent} panel={panel} base={base} />
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -134,5 +124,6 @@ export default function DashboardClient({ monitors }: { monitors: Monitor[] }) {
         />
       )}
     </motion.div>
+</>
   );
 }

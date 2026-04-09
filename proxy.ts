@@ -97,8 +97,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/reset-password' ||
     pathname === '/sitemap.xml' ||
     pathname === '/robots.txt' || 
-    pathname.startsWith('/status')
-
+    pathname.startsWith('/status')||
+    pathname.startsWith('/auth/callback')
   if (isPublicPage) {
     return withCors(request, supabaseResponse)
   }
@@ -107,7 +107,7 @@ export async function proxy(request: NextRequest) {
   const isProtected =
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/monitors') ||
-    pathname.startsWith('/settings') ||
+    pathname.startsWith('/accounts') ||
     pathname.startsWith('/upgrade')
 
   if (!user && isProtected) {
@@ -123,5 +123,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth/callback).*)'],
 }

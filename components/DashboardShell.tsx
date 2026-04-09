@@ -60,6 +60,13 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
   const theme        = useMemo(() => THEMES[displayIndex], [displayIndex])
   const [base, panel, edge] = theme.palette
   const accent = theme.accent
+  //Badge
+  const [showBadge, setShowBadge] = useState(false)
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem('cw-checklist-dismissed')
+      if (!dismissed) setShowBadge(true)
+  }, [])
 
   // Hydrate theme from localStorage on mount
   useEffect(() => {
@@ -520,6 +527,11 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
                       <path d="M10.5 6.5h.5M2 6.5h.5M6.5 2v.5M6.5 10v.5M9.3 3.7l-.35.35M4.05 8.95l-.35.35M9.3 9.3l-.35-.35M4.05 4.05l-.35-.35" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
                     </svg>
                     Settings
+                    {showBadge && (
+                      <span className="ml-auto w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white leading-none">
+                        !
+                      </span>
+                    )}
                   </button>
 
                   <button

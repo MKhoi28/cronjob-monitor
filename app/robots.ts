@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard', '/monitors', '/settings', '/upgrade'],
+      disallow: ['/dashboard', '/monitors', '/accounts', '/upgrade'],
     },
     sitemap: 'https://crwatch.vercel.app/sitemap.xml',
   }

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Check, Copy, Eye, EyeOff, Loader2, RefreshCw, ShieldOff } from "lucide-react";
 import { useAppTheme } from "@/components/DashboardShell";
 import { updateDisplayName, generateApiKey, revokeApiKey } from "./action";
+import OnboardingChecklist from '@/components/onboarding/OnboardingChecklist'
 
 const containerVariants: any = {
   hidden: { opacity: 0 },
@@ -67,10 +68,14 @@ export default function SettingsClient({
   user,
   initialDisplayName,
   maskedKey,
+  monitorCount,
+  hasPinged,
 }: {
   user: any
   initialDisplayName: string
   maskedKey: string | null
+  monitorCount: number
+  hasPinged: boolean
 }) {
   const theme = useAppTheme();
   const [base, panel] = theme.palette;
@@ -174,8 +179,12 @@ export default function SettingsClient({
 
       <motion.div variants={itemVariants} className="space-y-5">
 
-        {/* ── Identity ── */}
-        <Section title="Identity" subtitle="Authenticated session details." accent={accent} panel={panel} base={base}
+        {/* ── Onboarding checklist ── */}
+        {!hasPinged && (
+          <OnboardingChecklist monitorCount={monitorCount} hasPinged={hasPinged} />
+        )}
+
+        {/* ── Identity ── */}        <Section title="Identity" subtitle="Authenticated session details." accent={accent} panel={panel} base={base}
           footer={
             <div className="flex items-center gap-3 ml-auto">
               {saveStatus && <StatusPill type={saveStatus.type} message={saveStatus.msg} />}

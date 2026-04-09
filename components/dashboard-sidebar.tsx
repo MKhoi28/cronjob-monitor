@@ -20,7 +20,7 @@ export function DashboardSidebar({
   const navItems = [
     { name: "Dashboard",    href: "/dashboard", icon: LayoutDashboard },
     { name: "All Monitors", href: "/monitors",  icon: Activity        },
-    { name: "Account",      href: "/settings",  icon: Settings        },
+    { name: "Account",      href: "/account",  icon: Settings        },
   ];
 
   const pct     = Math.min(Math.round((monitorCount / monitorLimit) * 100), 100)
