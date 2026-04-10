@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Activity, LayoutDashboard, Settings, Zap } from "lucide-react";
 
 interface DashboardSidebarProps {
@@ -17,17 +18,23 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const pathname = usePathname();
 
+  // ── Onboarding badge ──────────────────────────────────────
+  const [showBadge, setShowBadge] = useState(false)
+  useEffect(() => {
+    const dismissed = localStorage.getItem('cw-checklist-dismissed')
+    if (!dismissed) setShowBadge(true)
+  }, [])
+
   const navItems = [
     { name: "Dashboard",    href: "/dashboard", icon: LayoutDashboard },
     { name: "All Monitors", href: "/monitors",  icon: Activity        },
-    { name: "Account",      href: "/account",  icon: Settings        },
+    { name: "Account",      href: "/account",   icon: Settings        },
   ];
 
   const pct     = Math.min(Math.round((monitorCount / monitorLimit) * 100), 100)
   const isFull  = monitorCount >= monitorLimit
   const isNear  = pct >= 80 && !isFull
 
-  // bar colour: red when full, amber when near, accent otherwise
   const barColor = isFull ? '#F87171' : isNear ? '#FBBF24' : 'currentColor'
 
   return (
@@ -60,6 +67,12 @@ export function DashboardSidebar({
             >
               <Icon className={`w-4 h-4 ${isActive ? 'text-foreground' : 'text-muted-foreground'}`} />
               {item.name}
+              {/* Onboarding badge — only on Account */}
+              {item.href === '/account' && showBadge && (
+                <span className="ml-auto w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white leading-none">
+                  !
+                </span>
+              )}
             </Link>
           );
         })}

@@ -526,12 +526,7 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
                       <path d="M6.5 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" stroke="currentColor" strokeWidth="1.4"/>
                       <path d="M10.5 6.5h.5M2 6.5h.5M6.5 2v.5M6.5 10v.5M9.3 3.7l-.35.35M4.05 8.95l-.35.35M9.3 9.3l-.35-.35M4.05 4.05l-.35-.35" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
                     </svg>
-                    Settings
-                    {showBadge && (
-                      <span className="ml-auto w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white leading-none">
-                        !
-                      </span>
-                    )}
+                    Account
                   </button>
 
                   <button

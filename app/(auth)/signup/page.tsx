@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { signupSchema } from '@/lib/validations'
 import { usePersistedTheme } from '@/hooks/usePersistedTheme'
+import { useRouter } from 'next/navigation'
 
 export default function SignupPage() {
   const [email, setEmail]       = useState('')
@@ -29,6 +30,8 @@ export default function SignupPage() {
 
   const theme  = THEMES[previewTheme ?? activeTheme]
   const accent = theme.accent
+
+  const router = useRouter()
 
   async function handleSignup() {
     // Must agree to policies before proceeding
@@ -61,8 +64,7 @@ export default function SignupPage() {
       setError('Could not create account. Please try again.')
       setLoading(false)
     } else {
-      setVerificationSent(true)
-      setLoading(false)
+        router.push('/dashboard')
     }
   }
 

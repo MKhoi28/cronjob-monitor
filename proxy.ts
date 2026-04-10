@@ -107,7 +107,7 @@ export async function proxy(request: NextRequest) {
   const isProtected =
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/monitors') ||
-    pathname.startsWith('/accounts') ||
+    pathname.startsWith('/account') ||
     pathname.startsWith('/upgrade')
 
   if (!user && isProtected) {

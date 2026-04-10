@@ -34,10 +34,10 @@ export default function EmptyState({ accent, panel, base }: Props) {
         className="mt-8 p-4 rounded-lg border text-left max-w-sm w-full"
         style={{ borderColor: `${accent}22`, backgroundColor: `${panel}66` }}
       >
-        <p className="text-xs font-mono mb-2 text-center" style={{ color: `${accent}100` }} >
+        <p className="text-xs font-mono mb-2" style={{ color: `${accent}100` }} >
           Then add to your script
         </p>
-        <code className="text-xs font-mono text-center" style={{ color: accent }}>
+        <code className="text-xs font-mono" style={{ color: accent }}>
           curl -s https://crwatch.vercel.app/api/ping/YOUR_ID
         </code>
       </div>
