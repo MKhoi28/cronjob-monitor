@@ -1,23 +1,30 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
-export default function WelcomeModal() {
-  const [show, setShow] = useState(false)
+interface Props {
+  show: boolean
+}
+
+export default function WelcomeModal({ show: initialShow }: Props) {
+  const [show, setShow] = useState(initialShow)
   const router = useRouter()
 
-  useEffect(() => {
-    const seen = localStorage.getItem('cw-welcome-seen')
-    if (!seen) setShow(true)
-  }, [])
-
-  function dismiss() {
-    localStorage.setItem('cw-welcome-seen', 'true')
+  async function dismiss() {
     setShow(false)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({ has_seen_welcome: true })
+        .eq('id', user.id)
+    }
   }
 
-  function getStarted() {
-    dismiss()
+  async function getStarted() {
+    await dismiss()
     router.push('/monitors/new')
   }
 
@@ -26,8 +33,6 @@ export default function WelcomeModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
       <div className="bg-zinc-900 border border-zinc-700 rounded-xl max-w-md w-full p-8 space-y-6">
-
-        {/* Header */}
         <div>
           <p className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-2">
             Welcome to CronWatch
@@ -36,8 +41,6 @@ export default function WelcomeModal() {
             You're 60 seconds away from monitored cron jobs
           </h2>
         </div>
-
-        {/* Steps */}
         <div className="space-y-4">
           {[
             { step: '01', title: 'Create a monitor', desc: 'Name your job and set how often it runs' },
@@ -53,8 +56,6 @@ export default function WelcomeModal() {
             </div>
           ))}
         </div>
-
-        {/* Actions */}
         <div className="flex gap-3 pt-2">
           <button
             onClick={getStarted}
@@ -69,7 +70,6 @@ export default function WelcomeModal() {
             Skip
           </button>
         </div>
-
       </div>
     </div>
   )

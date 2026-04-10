@@ -180,10 +180,7 @@ export default function SettingsClient({
       <motion.div variants={itemVariants} className="space-y-5">
 
         {/* ── Onboarding checklist ── */}
-        {!hasPinged && (
           <OnboardingChecklist monitorCount={monitorCount} hasPinged={hasPinged} />
-        )}
-
         {/* ── Identity ── */}        <Section title="Identity" subtitle="Authenticated session details." accent={accent} panel={panel} base={base}
           footer={
             <div className="flex items-center gap-3 ml-auto">

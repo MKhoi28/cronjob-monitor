@@ -13,6 +13,14 @@ export default async function DashboardPage() {
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
+  
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('has_seen_welcome')
+    .eq('id', user.id)
+    .single()
 
-  return <DashboardClient monitors={monitors || []} />
+  const showWelcome = !profile?.has_seen_welcome
+
+  return <DashboardClient monitors={monitors || []} showWelcome={showWelcome} />
 }

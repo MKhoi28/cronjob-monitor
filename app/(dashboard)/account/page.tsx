@@ -26,13 +26,13 @@ export default async function SettingsPage() {
 
   const monitorCount = monitors?.length ?? 0
 
-  const { data: pings } = await supabase
+  const { data: pingedMonitor } = await supabase
     .from('ping_logs')
     .select('id')
     .eq('user_id', user.id)
     .limit(1)
 
-  const hasPinged = (pings?.length ?? 0) > 0
+  const hasPinged = (pingedMonitor?.length ?? 0) > 0
 
   return (
     <SettingsClient

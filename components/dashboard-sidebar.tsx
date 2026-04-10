@@ -21,8 +21,12 @@ export function DashboardSidebar({
   // ── Onboarding badge ──────────────────────────────────────
   const [showBadge, setShowBadge] = useState(false)
   useEffect(() => {
-    const dismissed = localStorage.getItem('cw-checklist-dismissed')
-    if (!dismissed) setShowBadge(true)
+    const dismissed = sessionStorage.getItem('cw-checklist-dismissed')
+    setShowBadge(!dismissed)
+
+    const handler = () => setShowBadge(false)
+    window.addEventListener('checklist-dismissed', handler)
+    return () => window.removeEventListener('checklist-dismissed', handler)
   }, [])
 
   const navItems = [

@@ -10,7 +10,7 @@ export default function OnboardingChecklist({ monitorCount, hasPinged }: Props) 
   const [dismissed, setDismissed] = useState(false)
 
   useEffect(() => {
-    const done = localStorage.getItem('cw-checklist-dismissed')
+    const done = sessionStorage.getItem('cw-checklist-dismissed')
     if (done) setDismissed(true)
   }, [])
 
@@ -25,8 +25,9 @@ export default function OnboardingChecklist({ monitorCount, hasPinged }: Props) 
   const completedCount = steps.filter(s => s.done).length
 
   function dismiss() {
-    localStorage.setItem('cw-checklist-dismissed', 'true')
+    sessionStorage.setItem('cw-checklist-dismissed', 'true')
     setDismissed(true)
+    window.dispatchEvent(new Event('checklist-dismissed'))
   }
 
   // Auto-dismiss when all done
