@@ -19,11 +19,28 @@ export default async function SettingsPage() {
     ? `${profile.api_key.substring(0, 12)}${'•'.repeat(20)}`
     : null
 
+  const { data: monitors } = await supabase
+  .from('monitors')
+  .select('id')
+  .eq('user_id', user.id)
+
+  const monitorCount = monitors?.length ?? 0
+
+  const { data: pings } = await supabase
+    .from('ping_logs')
+    .select('id')
+    .eq('user_id', user.id)
+    .limit(1)
+
+  const hasPinged = (pings?.length ?? 0) > 0
+
   return (
     <SettingsClient
       user={user}
       initialDisplayName={profile?.display_name ?? ''}
       maskedKey={maskedKey}
+      monitorCount={monitorCount}
+      hasPinged={hasPinged}
     />
   )
 }
