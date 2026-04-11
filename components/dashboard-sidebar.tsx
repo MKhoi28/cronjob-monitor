@@ -6,9 +6,7 @@ import { useEffect, useState } from "react";
 import { Activity, LayoutDashboard, Settings, Zap } from "lucide-react";
 
 interface DashboardSidebarProps {
-  /** Actual number of monitors the user has created */
   monitorCount?: number
-  /** Free tier limit (default 10) */
   monitorLimit?: number
 }
 
@@ -18,7 +16,6 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const pathname = usePathname();
 
-  // ── Onboarding badge ──────────────────────────────────────
   const [showBadge, setShowBadge] = useState(false)
   useEffect(() => {
     const dismissed = sessionStorage.getItem('cw-checklist-dismissed')
@@ -29,15 +26,16 @@ export function DashboardSidebar({
     return () => window.removeEventListener('checklist-dismissed', handler)
   }, [])
 
+  // tour IDs map to nav items
   const navItems = [
-    { name: "Dashboard",    href: "/dashboard", icon: LayoutDashboard },
-    { name: "All Monitors", href: "/monitors",  icon: Activity        },
-    { name: "Account",      href: "/account",   icon: Settings        },
+    { name: "Dashboard",    href: "/dashboard", icon: LayoutDashboard, tourId: 'tour-nav-dashboard'  },
+    { name: "All Monitors", href: "/monitors",  icon: Activity,        tourId: 'tour-nav-monitors'   },
+    { name: "Account",      href: "/account",   icon: Settings,        tourId: 'tour-nav-account'    },
   ];
 
-  const pct     = Math.min(Math.round((monitorCount / monitorLimit) * 100), 100)
-  const isFull  = monitorCount >= monitorLimit
-  const isNear  = pct >= 80 && !isFull
+  const pct    = Math.min(Math.round((monitorCount / monitorLimit) * 100), 100)
+  const isFull = monitorCount >= monitorLimit
+  const isNear = pct >= 80 && !isFull
 
   const barColor = isFull ? '#F87171' : isNear ? '#FBBF24' : 'currentColor'
 
@@ -62,6 +60,7 @@ export function DashboardSidebar({
           return (
             <Link
               key={item.href}
+              id={item.tourId}
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium
                 ${isActive
@@ -71,7 +70,6 @@ export function DashboardSidebar({
             >
               <Icon className={`w-4 h-4 ${isActive ? 'text-foreground' : 'text-muted-foreground'}`} />
               {item.name}
-              {/* Onboarding badge — only on Account */}
               {item.href === '/account' && showBadge && (
                 <span className="ml-auto w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white leading-none">
                   !
@@ -85,7 +83,6 @@ export function DashboardSidebar({
       {/* Footer */}
       <div className="p-4 border-t border-border-subtle space-y-3">
 
-        {/* Plan usage */}
         <div className="px-3 py-3 rounded-md border border-border-subtle bg-surface text-xs">
           <div className="flex justify-between items-center mb-1">
             <span className="font-semibold text-foreground">Hobby Plan</span>
@@ -104,7 +101,6 @@ export function DashboardSidebar({
             />
           </div>
 
-          {/* Warning message */}
           {isFull && (
             <p className="mt-1.5 text-[10px] text-red-400">
               Monitor limit reached.{' '}
@@ -123,7 +119,6 @@ export function DashboardSidebar({
           )}
         </div>
 
-        {/* Upgrade button — always visible for free users */}
         <Link
           href="/pricing"
           className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors

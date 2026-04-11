@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from "framer-motion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
-import { Clock, TerminalSquare } from "lucide-react";
+import { Clock } from "lucide-react";
 import { useAppTheme } from "@/components/DashboardShell";
 import { ViewAllModal } from '@/components/ViewAllModal'
 import WelcomeModal from '@/components/onboarding/WelcomeModal'
+import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import EmptyState from '@/components/onboarding/EmptyState'
 type Monitor = any;
 
@@ -25,16 +26,33 @@ export default function DashboardClient({ monitors, showWelcome }: { monitors: M
   const [base, panel] = theme.palette;
   const accent        = theme.accent;
   const [showAll, setShowAll] = useState(false)
+  const [runTour, setRunTour] = useState(false)
+
+  // Belt-and-suspenders: even if the server still passes showWelcome=true
+  // (e.g. DB update hasn't propagated yet), localStorage blocks the re-show.
+  const [actuallyShow, setActuallyShow] = useState(false)
+  useEffect(() => {
+    const alreadySeen = localStorage.getItem('cw-welcome-seen')
+    setActuallyShow(showWelcome && !alreadySeen)
+  }, [showWelcome])
+
   const healthyCount = monitors?.filter(m => m.status === 'healthy').length ?? 0;
   const downCount    = monitors?.filter(m => m.status === 'down').length    ?? 0;
   const totalCount   = monitors?.length ?? 0;
 
   return (
     <>
-      <WelcomeModal show={showWelcome} />
+      <WelcomeModal show={actuallyShow} onStartTour={() => setRunTour(true)} />
+
+      {runTour && (
+        <OnboardingTour
+          accent={accent}
+          onComplete={() => setRunTour(false)}
+        />
+      )}
+
       <motion.div className="max-w-6xl w-full space-y-6" variants={containerVariants} initial="hidden" animate="show">
 
-        {/* ── Header ── */}
         <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-white mb-1">Metrics</h1>
@@ -42,8 +60,7 @@ export default function DashboardClient({ monitors, showWelcome }: { monitors: M
           </div>
         </motion.div>
 
-        {/* ── Stat cards ── */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <motion.div id="tour-metrics" variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             { label: 'Monitored Nodes', value: totalCount,   color: accent    },
             { label: 'Passing',         value: healthyCount, color: '#34D399' },
@@ -58,8 +75,7 @@ export default function DashboardClient({ monitors, showWelcome }: { monitors: M
           ))}
         </motion.div>
 
-        {/* ── Recent pings ── */}
-        <motion.div variants={itemVariants}>
+        <motion.div id="tour-recent-pings" variants={itemVariants}>
           <div className="rounded-2xl border overflow-hidden"
             style={{ borderColor: `${accent}44`, backgroundColor: `${panel}88`, boxShadow: `0 16px 50px ${base}88, inset 0 1px 0 rgba(255,255,255,0.07)` }}>
             <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${accent}22` }}>
