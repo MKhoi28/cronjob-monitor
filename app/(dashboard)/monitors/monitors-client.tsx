@@ -36,6 +36,7 @@ export default function MonitorsClient({
 
   const [copiedBadgeId, setCopiedBadgeId] = useState<string | null>(null)
   const [copiedMonitorId, setCopiedMonitorId] = useState<string | null>(null)
+  const [copiedPingId, setCopiedPingId] = useState<string | null>(null)
 
   // AI Analyst state
   const [analyzingMonitor, setAnalyzingMonitor] = useState<Monitor | null>(null)
@@ -58,6 +59,13 @@ export default function MonitorsClient({
     navigator.clipboard.writeText(monitorId)
     setCopiedMonitorId(monitorId)
     setTimeout(() => setCopiedMonitorId(null), 2000)
+  }
+
+  function copyPingUrl(monitorId: string) {
+    const text = `${window.location.origin}/api/ping/${monitorId}`
+    navigator.clipboard.writeText(text)
+    setCopiedPingId(monitorId)
+    setTimeout(() => setCopiedPingId(null), 2000)
   }
 
   return (
@@ -203,14 +211,31 @@ export default function MonitorsClient({
                           </button>
                         </TableCell>
 
-                        {/* Ping URL */}
+                        { /*Ping URL + Copy */  } 
                         <TableCell className="py-3">
-                          <code className="text-[11px] px-2 py-1 rounded font-mono"
-                            style={{ backgroundColor: `${panel}AA`, border: `1px solid ${accent}22`, color: `${accent}88` }}>
-                            GET /ping/{monitor.id.substring(0, 8)}…
-                          </code>
-                        </TableCell>
+                          <button
+                            onClick={() => copyPingUrl(monitor.id)}
+                            className="group flex items-center gap-1.5 font-mono text-[11px] px-2 py-1 rounded-lg border transition-all hover:scale-105 active:scale-95"
+                            style={{
+                              color: copiedPingId === monitor.id ? '#34D399' : `${accent}88`,
+                              borderColor: copiedPingId === monitor.id ? 'rgba(52,211,153,0.3)' : `${accent}22`,
+                              backgroundColor: copiedPingId === monitor.id ? 'rgba(52,211,153,0.08)' : `${panel}AA`,
+                            }}
+                            title={`${window.location.origin}/api/ping/${monitor.id.substring(0, 8)}…`}
+                          >
+                            {copiedPingId === monitor.id
+                              ? <Check className="w-3 h-3 shrink-0" style={{ color: '#34D399' }} />
+                              : <Copy className="w-3 h-3 shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
+                            }
 
+                            <span>
+                              {copiedPingId === monitor.id
+                                ? 'copied!'
+                                : `${window.location.origin}/api/ping/${monitor.id.substring(0, 8)}…`
+                              }
+                            </span>
+                          </button>
+                        </TableCell>
                         {/* Actions */}
                         <TableCell className="text-right py-3">
                           <div className="flex items-center justify-end gap-3">

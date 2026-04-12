@@ -26,11 +26,15 @@ export default async function SettingsPage() {
 
   const monitorCount = monitors?.length ?? 0
 
-  const { data: pingedMonitor } = await supabase
-    .from('ping_logs')
-    .select('id')
-    .eq('user_id', user.id)
-    .limit(1)
+  const monitorIds = monitors?.map(m => m.id) ?? []
+
+  const { data: pingedMonitor } = monitorIds.length > 0
+    ? await supabase
+      .from('ping_logs')
+      .select('id')
+      .eq('user_id', user.id)
+      .limit(1)
+  : { data: [] }
 
   const hasPinged = (pingedMonitor?.length ?? 0) > 0
 
