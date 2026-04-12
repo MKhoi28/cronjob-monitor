@@ -64,7 +64,7 @@ export default function DashboardShell({ sidebar, children }: DashboardShellProp
   const [showBadge, setShowBadge] = useState(false)
 
   useEffect(() => {
-    const dismissed = localStorage.getItem('cw-checklist-dismissed')
+    const dismissed = sessionStorage.getItem('cw-checklist-dismissed')
       if (!dismissed) setShowBadge(true)
   }, [])
 

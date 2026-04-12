@@ -10,7 +10,7 @@ export async function markWelcomeSeen(): Promise<void> {
 
   await supabase
     .from('profiles')
-    .update({ has_seen_welcome: true })
+    .upsert({ id: user.id, has_seen_welcome: true }, { onConflict: 'id' })
     .eq('id', user.id)
 
   revalidatePath('/dashboard')

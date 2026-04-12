@@ -5,37 +5,32 @@ import { markWelcomeSeen } from '@/app/(dashboard)/dashboard/welcome-action'
 
 interface Props {
   show: boolean
+  userId: string
   onStartTour?: () => void
 }
 
-export default function WelcomeModal({ show: initialShow, onStartTour }: Props) {
-  const [show, setShow] = useState(initialShow)
+export default function WelcomeModal({ show: initialShow, userId, onStartTour }: Props) {
+  const [show, setShow] = useState(false)  // always start false
   const router = useRouter()
 
-  // Immediately guard with localStorage so re-renders never re-show the modal.
-  // Also call the server action to persist to DB.
+  // Sync when parent decides to show
   useEffect(() => {
     if (!initialShow) return
-    // Client-side guard — instant, survives navigation within the same session
-    localStorage.setItem('cw-welcome-seen', '1')
-    // Server-side persist — updates DB + revalidates the dashboard route
-    markWelcomeSeen()
-  }, [initialShow])
+    const alreadySeen = localStorage.getItem(`cw-welcome-seen-${userId}`)
+    if (!alreadySeen) {
+      setShow(true)
+      localStorage.setItem(`cw-welcome-seen-${userId}`, '1')
+      markWelcomeSeen()
+    }
+  }, [initialShow, userId])
 
-  function dismiss() { setShow(false) }
-
-  function getStarted() {
-    setShow(false)
-    router.push('/monitors/new')
-  }
-
-  function handleTour() {
-    setShow(false)
-    onStartTour?.()
-  }
+  function dismiss()    { setShow(false) }
+  function getStarted() { setShow(false); router.push('/monitors/new') }
+  function handleTour() { setShow(false); onStartTour?.() }
 
   if (!show) return null
 
+  
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
       <div className="bg-zinc-900 border border-zinc-700 rounded-xl max-w-md w-full p-8 space-y-6 shadow-2xl">

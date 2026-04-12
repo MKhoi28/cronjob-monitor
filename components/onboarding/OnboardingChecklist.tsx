@@ -2,17 +2,18 @@
 import { useEffect, useState } from 'react'
 
 interface Props {
-  monitorCount: number
+  monitorCount: number  
   hasPinged: boolean
+  userId: string
 }
 
-export default function OnboardingChecklist({ monitorCount, hasPinged }: Props) {
+export default function OnboardingChecklist({ monitorCount, hasPinged, userId }: Props) {
   const [dismissed, setDismissed] = useState(false)
 
   useEffect(() => {
-    const done = sessionStorage.getItem('cw-checklist-dismissed')
+    const done = sessionStorage.getItem(`cw-checklist-dismissed-${userId}`)
     if (done) setDismissed(true)
-  }, [])
+  }, [userId])
 
   const steps = [
     { label: 'Create your account', done: true },
@@ -25,7 +26,7 @@ export default function OnboardingChecklist({ monitorCount, hasPinged }: Props) 
   const completedCount = steps.filter(s => s.done).length
 
   function dismiss() {
-    sessionStorage.setItem('cw-checklist-dismissed', 'true')
+    sessionStorage.setItem(`cw-checklist-dismissed-${userId}`, 'true')
     setDismissed(true)
     window.dispatchEvent(new Event('checklist-dismissed'))
   }

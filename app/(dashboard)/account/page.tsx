@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import SettingsClient from './accounts-client'
 
+export const dynamic = 'force-dynamic'
+
 export default async function SettingsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -14,27 +16,25 @@ export default async function SettingsPage() {
     .eq('id', user.id)
     .single()
 
-  // Only expose whether a key exists + a masked preview — never send the full key on load
   const maskedKey = profile?.api_key
     ? `${profile.api_key.substring(0, 12)}${'•'.repeat(20)}`
     : null
 
   const { data: monitors } = await supabase
-  .from('monitors')
-  .select('id')
-  .eq('user_id', user.id)
+    .from('monitors')
+    .select('id')
+    .eq('user_id', user.id)
 
   const monitorCount = monitors?.length ?? 0
-
   const monitorIds = monitors?.map(m => m.id) ?? []
 
   const { data: pingedMonitor } = monitorIds.length > 0
     ? await supabase
-      .from('ping_logs')
-      .select('id')
-      .eq('user_id', user.id)
-      .limit(1)
-  : { data: [] }
+        .from('ping_logs')
+        .select('monitor_id')
+        .in('monitor_id', monitorIds)  // ✅ fixed  
+        .limit(1)
+    : { data: [] }
 
   const hasPinged = (pingedMonitor?.length ?? 0) > 0
 
@@ -45,6 +45,7 @@ export default async function SettingsPage() {
       maskedKey={maskedKey}
       monitorCount={monitorCount}
       hasPinged={hasPinged}
+      userId={user.id} 
     />
   )
 }

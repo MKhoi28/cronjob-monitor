@@ -70,12 +70,14 @@ export default function SettingsClient({
   maskedKey,
   monitorCount,
   hasPinged,
+  userId,  
 }: {
   user: any
   initialDisplayName: string
   maskedKey: string | null
   monitorCount: number
   hasPinged: boolean
+  userId: string
 }) {
   const theme = useAppTheme();
   const [base, panel] = theme.palette;
@@ -180,7 +182,7 @@ export default function SettingsClient({
       <motion.div variants={itemVariants} className="space-y-5">
 
         {/* ── Onboarding checklist ── */}
-          <OnboardingChecklist monitorCount={monitorCount} hasPinged={hasPinged} />
+          <OnboardingChecklist monitorCount={monitorCount} hasPinged={hasPinged} userId={userId} />
         {/* ── Identity ── */}        <Section title="Identity" subtitle="Authenticated session details." accent={accent} panel={panel} base={base}
           footer={
             <div className="flex items-center gap-3 ml-auto">

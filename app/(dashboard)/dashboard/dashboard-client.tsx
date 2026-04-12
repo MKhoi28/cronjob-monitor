@@ -21,7 +21,7 @@ const itemVariants: any = {
   show: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } }
 };
 
-export default function DashboardClient({ monitors, showWelcome }: { monitors: Monitor[], showWelcome: boolean }) {
+export default function DashboardClient({ monitors, showWelcome, userId  }: { monitors: Monitor[], showWelcome: boolean, userId: string }) {
   const theme = useAppTheme();
   const [base, panel] = theme.palette;
   const accent        = theme.accent;
@@ -32,7 +32,7 @@ export default function DashboardClient({ monitors, showWelcome }: { monitors: M
   // (e.g. DB update hasn't propagated yet), localStorage blocks the re-show.
   const [actuallyShow, setActuallyShow] = useState(false)
   useEffect(() => {
-    const alreadySeen = localStorage.getItem('cw-welcome-seen')
+    const alreadySeen = localStorage.getItem(`cw-welcome-seen-${userId}`)
     setActuallyShow(showWelcome && !alreadySeen)
   }, [showWelcome])
 
@@ -42,7 +42,7 @@ export default function DashboardClient({ monitors, showWelcome }: { monitors: M
 
   return (
     <>
-      <WelcomeModal show={actuallyShow} onStartTour={() => setRunTour(true)} />
+      <WelcomeModal show={actuallyShow} userId={userId} onStartTour={() => setRunTour(true)} />
 
       {runTour && (
         <OnboardingTour

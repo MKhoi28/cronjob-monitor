@@ -22,5 +22,5 @@ export default async function DashboardPage() {
 
   const showWelcome = !profile?.has_seen_welcome
 
-  return <DashboardClient monitors={monitors || []} showWelcome={showWelcome} />
+  return <DashboardClient monitors={monitors || []} showWelcome={showWelcome} userId={user.id} />
 }
