@@ -24,6 +24,7 @@
     { id: 'graphite-steel',    name: 'Graphite Steel',    mood: 'Cold industrial luxe',         palette: ['#0F1113', '#1E2227', '#2D333B'], accent: '#7E9DB4' },
     { id: 'forest-nocturne',   name: 'Forest Nocturne',   mood: 'Organic cyber depth',          palette: ['#0D110F', '#1A2421', '#2A2833'], accent: '#62A58B' },
     { id: 'midnight-amethyst', name: 'Midnight Amethyst', mood: 'High-fashion violet aura',     palette: ['#120E16', '#1F1A24', '#2E2735'], accent: '#9A7AC8' },
+    { id: 'cobalt-void',       name: 'Cobalt Void',       mood: 'Sharp technical luxury',       palette: ['#060912', '#0C1221', '#121C34'], accent: '#5E81AC' },
   ]
 
   export default function LandingPage() {
