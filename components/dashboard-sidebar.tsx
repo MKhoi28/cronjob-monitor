@@ -45,9 +45,11 @@ export function DashboardSidebar({
       {/* Brand header */}
       <div className="h-16 px-6 flex items-center border-b border-border-subtle bg-surface/30">
         <div className="flex items-center gap-3">
-          <div className="w-5 h-5 bg-white flex items-center justify-center rounded-[4px]">
-            <div className="w-2.5 h-2.5 bg-black rounded-sm" />
-          </div>
+          <img 
+            src="/icon1.png" 
+            alt="CronWatch" 
+            className="w-8 h-8 object-contain"
+          />
           <span className="text-sm font-semibold tracking-wide text-foreground">CronWatch</span>
         </div>
       </div>
