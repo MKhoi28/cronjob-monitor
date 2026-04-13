@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'cw-theme'
-const THEME_COUNT = 4   // must match THEMES.length in both page.tsx and DashboardShell.tsx
+const THEME_COUNT = 5   // must match THEMES.length in both page.tsx and DashboardShell.tsx
 
 /**
  * Drop-in replacement for useState(0) for the active theme index.
