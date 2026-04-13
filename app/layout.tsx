@@ -15,7 +15,7 @@ export const metadata = {
     apple: '/apple-touch-icon.png',
   },
 
-  manifest: '/site.webmanifest',
+  manifest: '/manifest.json',
 
   openGraph: {
     title: 'CronWatch — AI-Powered Cron Job Monitoring',
