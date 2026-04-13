@@ -1,44 +1,54 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 
 interface Props {
-  monitorCount: number  
+  monitorCount: number
   hasPinged: boolean
   userId: string
+  firstMonitorId?: string
 }
 
-export default function OnboardingChecklist({ monitorCount, hasPinged, userId }: Props) {
-  const [dismissed, setDismissed] = useState(false)
+export default function OnboardingChecklist({ monitorCount, hasPinged, userId, firstMonitorId }: Props) {
+  const [dismissed,     setDismissed]     = useState(false)
+  const [statusVisited, setStatusVisited] = useState(false)
 
   useEffect(() => {
-    const done = sessionStorage.getItem(`cw-checklist-dismissed-${userId}`)
-    if (done) setDismissed(true)
+    if (!userId) return
+    if (localStorage.getItem(`cw-checklist-dismissed-${userId}`)) setDismissed(true)
+    if (localStorage.getItem(`cw-status-visited-${userId}`))      setStatusVisited(true)
   }, [userId])
 
   const steps = [
-    { label: 'Create your account', done: true },
+    { label: 'Create your account',       done: true             },
     { label: 'Create your first monitor', done: monitorCount > 0 },
-    { label: 'Make your first ping', done: hasPinged },
-    { label: 'Check your status page', done: hasPinged },
+    { label: 'Make your first ping',      done: hasPinged        },
+    { label: 'Check your status page',    done: statusVisited    },
   ]
 
-  const allDone = steps.every(s => s.done)
+  const allDone        = steps.every(s => s.done)
   const completedCount = steps.filter(s => s.done).length
 
-  function dismiss() {
-    sessionStorage.setItem(`cw-checklist-dismissed-${userId}`, 'true')
+  const dismiss = useCallback(() => {
+    localStorage.setItem(`cw-checklist-dismissed-${userId}`, 'true')
     setDismissed(true)
     window.dispatchEvent(new Event('checklist-dismissed'))
+  }, [userId])
+
+  // Auto-dismiss 2 s after all steps complete — persisted, never shows again
+  useEffect(() => {
+    if (!allDone) return
+    const t = setTimeout(dismiss, 2000)
+    return () => clearTimeout(t)
+  }, [allDone, dismiss])
+
+  function handleStatusVisit() {
+    localStorage.setItem(`cw-status-visited-${userId}`, 'true')
+    setStatusVisited(true)
   }
 
-  // Auto-dismiss when all done
-  useEffect(() => {
-    if (allDone) {
-      setTimeout(dismiss, 2000)
-    }
-  }, [allDone])
-
   if (dismissed) return null
+
+  const statusHref = firstMonitorId ? `/status/${firstMonitorId}` : null
 
   return (
     <div className="border border-zinc-800 rounded-lg p-5 bg-zinc-900/50 space-y-4">
@@ -62,12 +72,10 @@ export default function OnboardingChecklist({ monitorCount, hasPinged, userId }:
 
       {/* Steps */}
       <div className="space-y-2">
-        {steps.map(({ label, done }) => (
+        {steps.map(({ label, done }, i) => (
           <div key={label} className="flex items-center gap-3">
             <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 transition-colors ${
-              done
-                ? 'bg-orange-500 border-orange-500'
-                : 'border-zinc-600'
+              done ? 'bg-orange-500 border-orange-500' : 'border-zinc-600'
             }`}>
               {done && (
                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
@@ -75,8 +83,20 @@ export default function OnboardingChecklist({ monitorCount, hasPinged, userId }:
                 </svg>
               )}
             </div>
-            <span className={`text-sm transition-colors ${done ? 'text-zinc-500 line-through' : 'text-zinc-300'}`}>
+            <span className={`text-sm flex items-center gap-2 transition-colors ${done ? 'text-zinc-500 line-through' : 'text-zinc-300'}`}>
               {label}
+              {/* "Visit →" link on step 4 until the user has visited */}
+              {i === 3 && !done && statusHref && (
+                <a
+                  href={statusHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleStatusVisit}
+                  className="text-orange-500 hover:text-orange-400 text-xs font-mono transition-colors"
+                >
+                  Visit →
+                </a>
+              )}
             </span>
           </div>
         ))}

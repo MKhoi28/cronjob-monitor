@@ -24,9 +24,11 @@ export default async function SettingsPage() {
     .from('monitors')
     .select('id')
     .eq('user_id', user.id)
+    .order('created_at', { ascending: true })
 
-  const monitorCount = monitors?.length ?? 0
-  const monitorIds = monitors?.map(m => m.id) ?? []
+  const monitorCount   = monitors?.length ?? 0
+  const firstMonitorId = monitors?.[0]?.id as string | undefined
+  const monitorIds     = monitors?.map(m => m.id) ?? []
 
   const { data: pingedMonitor } = monitorIds.length > 0
     ? await supabase
@@ -45,7 +47,8 @@ export default async function SettingsPage() {
       maskedKey={maskedKey}
       monitorCount={monitorCount}
       hasPinged={hasPinged}
-      userId={user.id} 
+      userId={user.id}
+      firstMonitorId={firstMonitorId}
     />
   )
 }
