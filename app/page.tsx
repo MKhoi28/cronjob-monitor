@@ -325,14 +325,6 @@
                 )
               })}
             </div>
-
-            {/* Footer hint */}
-            <div
-              className="px-4 py-2.5 text-[10px] tracking-[0.14em]"
-              style={{ color: 'rgba(255,255,255,0.3)', borderTop: `1px solid ${accent}18` }}
-            >
-              Hover to preview · Click to apply
-            </div>
           </div>
         )}
 
