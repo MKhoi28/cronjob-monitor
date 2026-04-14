@@ -20,6 +20,7 @@ export interface PricingTier {
 interface PricingCardProps {
   tier: PricingTier
   paymentFrequency: string
+  accent?: string
   onCtaClick?: () => void | Promise<void>
 }
 
@@ -33,7 +34,7 @@ function getSavings(yearlyPrice: number): { perMonth: number; perYear: number } 
   }
 }
 
-export function PricingCard({ tier, paymentFrequency, onCtaClick }: PricingCardProps) {
+export function PricingCard({ tier, paymentFrequency, accent = '#c8a050', onCtaClick }: PricingCardProps) {
   const [loading, setLoading] = React.useState(false)
   const price                  = tier.price[paymentFrequency]
   const isHighlighted          = tier.highlighted
@@ -66,8 +67,8 @@ export function PricingCard({ tier, paymentFrequency, onCtaClick }: PricingCardP
   )
 
   const ctaStyle = isHighlighted ? {
-    background: "linear-gradient(135deg, #c8a050 0%, #e8c070 50%, #c8a050 100%)",
-    boxShadow:  "0 0 20px rgba(200,160,80,0.25), 0 2px 8px rgba(0,0,0,0.5)",
+    background: `linear-gradient(135deg, ${accent} 0%, ${accent}dd 50%, ${accent} 100%)`,
+    boxShadow:  `0 0 20px ${accent}40, 0 2px 8px rgba(0,0,0,0.5)`,
   } : undefined
 
   return (
@@ -76,7 +77,7 @@ export function PricingCard({ tier, paymentFrequency, onCtaClick }: PricingCardP
       "transition-transform duration-300 hover:-translate-y-1",
       isHighlighted ? "pricing-card-highlighted" : "pricing-card-base"
     )}>
-      {isHighlighted && <AnimatedBorder />}
+      {isHighlighted && <AnimatedBorder accent={accent} />}
 
       <div className={cn(
         "relative z-10 flex flex-col gap-6 rounded-2xl p-7 h-full",
@@ -95,7 +96,7 @@ export function PricingCard({ tier, paymentFrequency, onCtaClick }: PricingCardP
         {isHighlighted && (
           <div className="absolute inset-0 rounded-2xl pointer-events-none"
             style={{
-              background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(200,160,80,0.12) 0%, transparent 70%)",
+              background: `radial-gradient(ellipse 80% 60% at 50% -10%, ${accent}1f 0%, transparent 70%)`,
             }}
           />
         )}
@@ -104,25 +105,33 @@ export function PricingCard({ tier, paymentFrequency, onCtaClick }: PricingCardP
         <div className="relative flex items-center justify-between">
           <div className="flex items-center gap-2">
             {isHighlighted && (
-              <div className="flex items-center justify-center w-6 h-6 rounded-full"
-                style={{ background: "rgba(200,160,80,0.15)", border: "1px solid rgba(200,160,80,0.3)" }}>
-                <Zap className="w-3 h-3" style={{ color: "#c8a050" }} />
+              <div
+                className="flex items-center justify-center w-6 h-6 rounded-full"
+                style={{
+                  background: `${accent}26`,
+                  border:     `1px solid ${accent}4d`,
+                }}
+              >
+                <Zap className="w-3 h-3" style={{ color: accent }} />
               </div>
             )}
-            <span className={cn(
-              "font-mono text-sm font-bold tracking-widest uppercase",
-              isHighlighted ? "text-[#c8a050]" : "text-white/50"
-            )}>
+            <span
+              className="font-mono text-sm font-bold tracking-widest uppercase"
+              style={{ color: isHighlighted ? accent : 'rgba(255,255,255,0.5)' }}
+            >
               {tier.name}
             </span>
           </div>
+
           {isPopular && (
-            <span className="font-mono text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full"
+            <span
+              className="font-mono text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full"
               style={{
-                background: "rgba(200,160,80,0.12)",
-                border:     "1px solid rgba(200,160,80,0.35)",
-                color:      "#c8a050",
-              }}>
+                background: `${accent}1f`,
+                border:     `1px solid ${accent}59`,
+                color:      accent,
+              }}
+            >
               🔥 Popular
             </span>
           )}
@@ -159,12 +168,14 @@ export function PricingCard({ tier, paymentFrequency, onCtaClick }: PricingCardP
         </div>
 
         {/* Divider */}
-        <div className={cn(
-          "h-px w-full",
-          isHighlighted
-            ? "bg-gradient-to-r from-transparent via-[#c8a050]/30 to-transparent"
-            : "bg-gradient-to-r from-transparent via-white/10 to-transparent"
-        )} />
+        <div
+          className="h-px w-full"
+          style={{
+            background: isHighlighted
+              ? `linear-gradient(to right, transparent, ${accent}4d, transparent)`
+              : 'linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent)',
+          }}
+        />
 
         {/* Description + Features */}
         <div className="flex-1 flex flex-col gap-4">
@@ -174,11 +185,14 @@ export function PricingCard({ tier, paymentFrequency, onCtaClick }: PricingCardP
           <ul className="space-y-2.5">
             {tier.features.map((feature, i) => (
               <li key={i} className="flex items-center gap-2.5">
-                <div className={cn(
-                  "flex items-center justify-center w-4 h-4 rounded-full shrink-0",
-                  isHighlighted ? "bg-[rgba(200,160,80,0.15)]" : "bg-white/5"
-                )}>
-                  <BadgeCheck className={cn("h-2.5 w-2.5", isHighlighted ? "text-[#c8a050]" : "text-white/40")} />
+                <div
+                  className="flex items-center justify-center w-4 h-4 rounded-full shrink-0"
+                  style={{ background: isHighlighted ? `${accent}26` : 'rgba(255,255,255,0.05)' }}
+                >
+                  <BadgeCheck
+                    className="h-2.5 w-2.5"
+                    style={{ color: isHighlighted ? accent : 'rgba(255,255,255,0.4)' }}
+                  />
                 </div>
                 <span className={cn("text-sm font-mono", isHighlighted ? "text-white/80" : "text-white/50")}>
                   {feature}
@@ -208,7 +222,7 @@ export function PricingCard({ tier, paymentFrequency, onCtaClick }: PricingCardP
   )
 }
 
-function AnimatedBorder() {
+function AnimatedBorder({ accent = '#c8a050' }: { accent?: string }) {
   return (
     <>
       <style>{`
@@ -218,7 +232,7 @@ function AnimatedBorder() {
       <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
         <div className="pricing-spin absolute" style={{
           width: "200%", height: "200%", top: "-50%", left: "-50%",
-          background: "conic-gradient(from 0deg, transparent 0deg, #c8a050 60deg, transparent 120deg, transparent 360deg)",
+          background: `conic-gradient(from 0deg, transparent 0deg, ${accent} 60deg, transparent 120deg, transparent 360deg)`,
           opacity: 0.6,
         }} />
       </div>

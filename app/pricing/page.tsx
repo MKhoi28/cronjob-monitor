@@ -166,6 +166,7 @@ export default function PricingPage() {
                 key={tier.name}
                 tier={tier}
                 paymentFrequency={frequency}
+                accent={accent}  
                 onCtaClick={tier.highlighted ? handleUpgrade : undefined}
               />
             ))}
