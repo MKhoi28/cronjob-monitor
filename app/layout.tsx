@@ -23,12 +23,21 @@ export const metadata = {
     url: 'https://crwatch.vercel.app',
     siteName: 'CronWatch',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'CronWatch — AI-Powered Cron Job Monitoring',
+      },
+    ],
   },
 
   twitter: {
     card: 'summary_large_image',
     title: 'CronWatch — AI-Powered Cron Job Monitoring',
     description: 'Get instant alerts when your cron jobs fail.',
+    mages: ['/og-image.png'],
   },
 }// Tells mobile browsers to match the device width and never auto-zoom.
 
