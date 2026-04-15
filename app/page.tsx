@@ -32,6 +32,29 @@
     const [hoveredTheme, setHoveredTheme] = useState<number | null>(null)
     const [dropdownOpen, setDropdownOpen] = useState(false)
 
+    // ── Waitlist ─────────────────────────────────────────────────────────────
+    const [waitlistEmail,   setWaitlistEmail]   = useState('')
+    const [waitlistStatus,  setWaitlistStatus]  = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+    async function handleWaitlist() {
+      if (!waitlistEmail || !waitlistEmail.includes('@')) return
+      setWaitlistStatus('loading')
+      try {
+        const { createClient } = await import('@supabase/supabase-js')
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const { error } = await supabase.from('waitlist').insert({ email: waitlistEmail })
+        if (error && error.code !== '23505') throw error // 23505 = duplicate
+        setWaitlistStatus('success')
+        setWaitlistEmail('')
+      } catch {
+        setWaitlistStatus('error')
+        setTimeout(() => setWaitlistStatus('idle'), 3000)
+      }
+    }
+
     // ── NEW: track button position so the fixed panel lines up ──────────────
     const [btnRect, setBtnRect] = useState<{ top: number; left: number } | null>(null)
 
@@ -438,7 +461,7 @@
               </Link>
             </div>
           </nav>
-
+          
           {/* ── Hero ── */}
           <section ref={heroRef} className="relative pb-12 pt-14 text-center md:pt-20">
             <div className="hero-deco-float pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -463,8 +486,91 @@
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>42ms ALERT LATENCY</div>
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>GLOBAL COVERAGE</div>
             </div>
+            {/* ── Waitlist capture ── */}
+            <div className="hero-subline mx-auto mt-8 flex flex-col items-center gap-3 max-w-md w-full px-4">
+              {waitlistStatus === 'success' ? (
+                <div
+                  className="w-full rounded-xl px-5 py-3 text-center font-mono text-sm"
+                  style={{ background: `${accent}18`, border: `1px solid ${accent}44`, color: accent }}
+                >
+                  ✓ You're on the list — we'll notify you at launch 🚀
+                </div>
+              ) : (
+                <div className="flex w-full gap-2">
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={waitlistEmail}
+                    onChange={e => setWaitlistEmail(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleWaitlist()}
+                    className="flex-1 rounded-xl px-4 py-2.5 text-sm font-mono outline-none"
+                    style={{
+                      background:   `${panel}CC`,
+                      border:       `1px solid ${waitlistStatus === 'error' ? '#F87171' : `${accent}44`}`,
+                      color:        'rgba(255,255,255,0.85)',
+                      transition:   'border-color 200ms ease',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleWaitlist}
+                    disabled={waitlistStatus === 'loading'}
+                    className="rounded-xl px-4 py-2.5 text-sm font-semibold shrink-0"
+                    style={{
+                      background:  accent,
+                      color:       base,
+                      opacity:     waitlistStatus === 'loading' ? 0.7 : 1,
+                      transition:  'opacity 200ms ease',
+                    }}
+                  >
+                    {waitlistStatus === 'loading' ? '...' : 'Notify Me'}
+                  </button>
+                </div>
+              )}
+              <p className="text-xs font-mono" style={{ color: `${accent}60` }}>
+                Pro launching May 28 · First 10 get free Pro forever
+              </p>
+            </div>
           </section>
-
+                    {/* ── Founding Member Banner ── */}
+          <section className="mx-auto max-w-7xl px-6 md:px-10 mt-8 mb-8">
+            <div
+              className="rounded-2xl px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-6"
+              style={{
+                background:  `linear-gradient(135deg, ${panel}EE 0%, ${base}FF 100%)`,
+                border:      `1px solid ${accent}44`,
+                boxShadow:   `0 0 40px ${accent}18`,
+              }}
+            >
+              <div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.6rem', letterSpacing: '0.25em', color: accent, opacity: 0.7, marginBottom: '0.5rem' }}>◈ FOUNDING MEMBERS</div>
+                <h3 className="text-lg md:text-xl font-bold mb-1">First 10 users get Pro free. Forever.</h3>
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>
+                  No catch. Sign up, use it on a real cron job, give honest feedback.
+                </p>
+              </div>
+                <a
+                href="mailto:duongmkhoi.cronwatch@gmail.com?subject=Founding Member&body=Hi, I'd like to be a founding member of CronWatch. My signup email is:"
+                className="shrink-0 rounded-xl px-6 py-3 text-sm font-semibold whitespace-nowrap"
+                style={{
+                  background: `${accent}22`,
+                  border:     `1px solid ${accent}66`,
+                  color:      accent,
+                  transition: 'all 180ms ease',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = `${accent}35`
+                  ;(e.currentTarget as HTMLAnchorElement).style.boxShadow = `0 4px 20px ${accent}44`
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = `${accent}22`
+                  ;(e.currentTarget as HTMLAnchorElement).style.boxShadow = 'none'
+                }}
+              >
+                Claim a founding spot →
+              </a>
+            </div>
+          </section>
           <section
             ref={heroRef}
             className="relative min-h-[calc(100vh-100px)] flex items-center justify-center text-center"
@@ -722,7 +828,6 @@
               </div>
             </div>
           </section>
-
           {/* ── Section 4: CTA Banner ── */}
           <section className="mx-auto max-w-7xl px-6 md:px-10 mt-16 mb-16">
             <div
