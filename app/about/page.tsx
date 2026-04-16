@@ -254,7 +254,7 @@ export default function AboutPage() {
         {/* ── NAV ── */}
         <nav className="about-nav" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.1rem 2.5rem', borderBottom: `1px solid ${accent}22`, backdropFilter: 'blur(14px)', background: `${panel}B0`, position: 'sticky', top: 0, zIndex: 100 }}>
           <Link href="/" style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.95rem', color: accent, textDecoration: 'none', letterSpacing: '0.06em' }}>
-            CRON<span style={{ color: 'rgba(255,255,255,0.7)' }}>WATCH</span>
+            CRONWATCH
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             {[{ label: 'Home', href: '/' }, { label: 'Pricing', href: '/pricing' }].map(({ label, href }) => (
