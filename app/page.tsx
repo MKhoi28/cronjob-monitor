@@ -55,6 +55,49 @@
       }
     }
 
+    const [foundingModalOpen, setFoundingModalOpen] = useState(false)
+    const [foundingEmail,     setFoundingEmail]     = useState('')
+    const [foundingStatus,    setFoundingStatus]    = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+    async function handleFoundingSubmit() {
+      if (!foundingEmail || !foundingEmail.includes('@')) return
+      setFoundingStatus('loading')
+      try {
+        const { createClient } = await import('@supabase/supabase-js')
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const { error } = await supabase
+          .from('waitlist')
+          .upsert({ email: foundingEmail, founding_member: true }, { onConflict: 'email' })
+        if (error) throw error
+        setFoundingStatus('success')
+        setFoundingSpotsLeft(prev => prev !== null ? Math.max(0, prev - 1) : null)
+      } catch {
+        setFoundingStatus('error')
+        setTimeout(() => setFoundingStatus('idle'), 3000)
+      }
+    }
+
+    const [foundingSpotsLeft, setFoundingSpotsLeft] = useState<number | null>(null)
+
+    useEffect(() => {
+      async function fetchSpots() {
+        const { createClient } = await import('@supabase/supabase-js')
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const { count } = await supabase
+          .from('waitlist')
+          .select('*', { count: 'exact', head: true })
+          .eq('founding_member', true)
+        if (count !== null) setFoundingSpotsLeft(Math.max(0, 10 - count))
+      }
+      fetchSpots()
+    }, [])
+
     // ── NEW: track button position so the fixed panel lines up ──────────────
     const [btnRect, setBtnRect] = useState<{ top: number; left: number } | null>(null)
 
@@ -546,11 +589,15 @@
                 <div style={{ fontFamily: 'monospace', fontSize: '0.6rem', letterSpacing: '0.25em', color: accent, opacity: 0.7, marginBottom: '0.5rem' }}>◈ FOUNDING MEMBERS</div>
                 <h3 className="text-lg md:text-xl font-bold mb-1">First 10 users get Pro free. Forever.</h3>
                 <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>
-                  No catch. Sign up, use it on a real cron job, give honest feedback.
+                  No catch. Sign up, use it on a real cron job, give honest feedback.{' '}
+                  {foundingSpotsLeft !== null && foundingSpotsLeft > 0 && (
+                    <span style={{ color: accent }}>{foundingSpotsLeft} spots left.</span>
+                  )}
                 </p>
               </div>
-                <a
-                href="mailto:duongmkhoi.cronwatch@gmail.com?subject=Founding Member&body=Hi, I'd like to be a founding member of CronWatch. My signup email is:"
+              <button
+                type="button"
+                onClick={() => setFoundingModalOpen(true)}
                 className="shrink-0 rounded-xl px-6 py-3 text-sm font-semibold whitespace-nowrap"
                 style={{
                   background: `${accent}22`,
@@ -559,16 +606,16 @@
                   transition: 'all 180ms ease',
                 }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLAnchorElement).style.background = `${accent}35`
-                  ;(e.currentTarget as HTMLAnchorElement).style.boxShadow = `0 4px 20px ${accent}44`
+                  (e.currentTarget as HTMLButtonElement).style.background = `${accent}35`
+                  ;(e.currentTarget as HTMLButtonElement).style.boxShadow = `0 4px 20px ${accent}44`
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLAnchorElement).style.background = `${accent}22`
-                  ;(e.currentTarget as HTMLAnchorElement).style.boxShadow = 'none'
+                  (e.currentTarget as HTMLButtonElement).style.background = `${accent}22`
+                  ;(e.currentTarget as HTMLButtonElement).style.boxShadow = 'none'
                 }}
               >
                 Claim a founding spot →
-              </a>
+              </button>
             </div>
           </section>
           <section
@@ -933,6 +980,89 @@
           </footer>
 
         </div>
+
+        {/* ── Founding Member Modal ── */}
+        {foundingModalOpen && (
+          <div
+            className="fixed inset-0 z-[99999] flex items-center justify-center px-4"
+            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}
+            onClick={() => { setFoundingModalOpen(false); setFoundingStatus('idle') }}
+          >
+            <div
+              className="w-full max-w-md rounded-2xl p-8"
+              style={{
+                background:  panel,
+                border:      `1px solid ${accent}44`,
+                boxShadow:   `0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px ${accent}18`,
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              {foundingStatus === 'success' ? (
+                <div className="text-center py-4">
+                  <div className="text-4xl mb-4">🎉</div>
+                  <h3 className="text-xl font-bold mb-2">You're in!</h3>
+                  <p className="text-sm font-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    I'll personally upgrade your account to Pro free forever on launch day.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => { setFoundingModalOpen(false); setFoundingStatus('idle') }}
+                    className="mt-6 rounded-xl px-6 py-2.5 text-sm font-semibold"
+                    style={{ background: accent, color: base }}
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.6rem', letterSpacing: '0.25em', color: accent, opacity: 0.7, marginBottom: '1rem' }}>◈ FOUNDING MEMBER SPOT</div>
+                  <h3 className="text-xl font-bold mb-2">Claim free Pro. Forever.</h3>
+                  <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>
+                    Enter your signup email and I'll upgrade you to Pro on launch day — no payment ever required.
+                  </p>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={foundingEmail}
+                    onChange={e => setFoundingEmail(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleFoundingSubmit()}
+                    className="w-full rounded-xl px-4 py-3 text-sm font-mono outline-none mb-3"
+                    style={{
+                      background:  'rgba(0,0,0,0.4)',
+                      border:      `1px solid ${foundingStatus === 'error' ? '#F87171' : `${accent}44`}`,
+                      color:       'rgba(255,255,255,0.85)',
+                    }}
+                  />
+                  {foundingStatus === 'error' && (
+                    <p className="text-xs font-mono mb-3" style={{ color: '#F87171' }}>Something went wrong — try again.</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleFoundingSubmit}
+                    disabled={foundingStatus === 'loading'}
+                    className="w-full rounded-xl py-3 text-sm font-semibold"
+                    style={{
+                      background: accent,
+                      color:      base,
+                      opacity:    foundingStatus === 'loading' ? 0.7 : 1,
+                      transition: 'opacity 200ms ease',
+                    }}
+                  >
+                    {foundingStatus === 'loading' ? 'Saving...' : 'Claim My Spot →'}
+                  </button>
+                  <p className="text-center text-xs font-mono mt-4" style={{ color: `${accent}55` }}>
+                    {foundingSpotsLeft === null
+                      ? 'Loading spots...'
+                      : foundingSpotsLeft === 0
+                        ? 'All founding spots claimed'
+                        : `${foundingSpotsLeft} of 10 spots remaining · No credit card ever`
+                    }
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
         <style jsx>{`
           button {
