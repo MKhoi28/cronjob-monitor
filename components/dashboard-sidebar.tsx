@@ -22,7 +22,7 @@ export function DashboardSidebar({
 
   const [showBadge, setShowBadge] = useState(false)
   useEffect(() => {
-    const dismissed = localStorage.getItem(`cw-checklist-dismissed`)
+    const dismissed = sessionStorage.getItem(`cw-checklist-dismissed`)
     setShowBadge(!dismissed)
     const handler = () => setShowBadge(false)
     window.addEventListener('checklist-dismissed', handler)

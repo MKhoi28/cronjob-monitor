@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import BackgroundAnimation from '@/components/BackgroundAnimation'
@@ -21,7 +21,9 @@ export default function LoginPage() {
   const [loading, setLoading]   = useState(false)
   const [activeTheme, setActiveTheme] = usePersistedTheme()
   const [previewTheme, setPreviewTheme] = useState<number | null>(null)
-  const router   = useRouter()
+  const router       = useRouter()
+  const searchParams = useSearchParams()
+  const ref          = searchParams.get('ref') // e.g. 'founding'
 
   const theme  = THEMES[previewTheme ?? activeTheme]
   const accent = theme.accent
@@ -50,7 +52,9 @@ export default function LoginPage() {
       setError('Invalid email or password')
       setLoading(false)
     } else {
-      router.push('/dashboard')
+      // If they came from the founding banner, send them back to the landing
+      // page with ?ref=founding so the modal auto-opens
+      router.push(ref === 'founding' ? '/?ref=founding' : '/dashboard')
     }
   }
 
@@ -158,8 +162,11 @@ export default function LoginPage() {
               <div className="pt-4 text-center" style={{ borderTop: `1px solid ${accent}15` }}>
                 <p className="text-sm font-mono text-gray-500">
                   No account?{' '}
-                  <Link href="/signup" className="font-semibold transition-colors hover:underline"
-                    style={{ color: accent }}>
+                  <Link
+                    href={ref === 'founding' ? `/signup?ref=founding` : '/signup'}
+                    className="font-semibold transition-colors hover:underline"
+                    style={{ color: accent }}
+                  >
                     Create one free
                   </Link>
                 </p>

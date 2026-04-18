@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { signupSchema } from '@/lib/validations'
 import { usePersistedTheme } from '@/hooks/usePersistedTheme'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function SignupPage() {
   const [email, setEmail]       = useState('')
@@ -31,7 +31,9 @@ export default function SignupPage() {
   const theme  = THEMES[previewTheme ?? activeTheme]
   const accent = theme.accent
 
-  const router = useRouter()
+  const router       = useRouter()
+  const searchParams = useSearchParams()
+  const ref          = searchParams.get('ref') // e.g. 'founding'
 
   async function handleSignup() {
     // Must agree to policies before proceeding
@@ -64,7 +66,9 @@ export default function SignupPage() {
       setError('Could not create account. Please try again.')
       setLoading(false)
     } else {
-        router.push('/dashboard')
+      // If they came from the founding banner, send them back to the landing
+      // page with ?ref=founding so the modal auto-opens after session resolves
+      router.push(ref === 'founding' ? '/?ref=founding' : '/dashboard')
     }
   }
 
@@ -295,8 +299,13 @@ export default function SignupPage() {
                     <div className="pt-4 text-center" style={{ borderTop: `1px solid ${accent}15` }}>
                       <p className="text-sm font-mono text-gray-500">
                         Already have an account?{' '}
-                        <Link href="/login" className="font-semibold transition-colors hover:underline"
-                          style={{ color: accent }}>Sign in</Link>
+                        <Link
+                          href={ref === 'founding' ? `/login?ref=founding` : '/login'}
+                          className="font-semibold transition-colors hover:underline"
+                          style={{ color: accent }}
+                        >
+                          Sign in
+                        </Link>
                       </p>
                     </div>
                   </CardContent>
