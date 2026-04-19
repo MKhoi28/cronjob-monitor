@@ -662,6 +662,13 @@ I have read and agree to the tester terms:
                 <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>
                   No catch. Sign up, use it on a real cron job, give honest feedback.
                 </p>
+                {foundingSpotsLeft !== null && (
+                  <p className="text-xs font-mono mt-1" style={{ color: foundingSpotsLeft === 0 ? 'rgba(255,255,255,0.25)' : accent }}>
+                    {foundingSpotsLeft === 0
+                      ? 'All founding spots have been claimed.'
+                      : `${foundingSpotsLeft} of 10 spots remaining`}
+                  </p>
+                )}
               </div>
               {sessionLoading ? (
                 <div className="shrink-0 rounded-xl px-6 py-3 text-sm font-semibold"
