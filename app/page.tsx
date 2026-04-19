@@ -129,7 +129,10 @@ I have read and agree to the tester terms:
 
     function handleClaimSpot() {
       if (!agreedToTesterTerms) return
-      setFoundingStatus('success')
+      window.location.href = mailtoHref
+      // Short delay so the browser has time to launch the email client
+      // before React re-renders to the success screen
+      setTimeout(() => setFoundingStatus('success'), 300)
     }
 
     function closeModal() {
@@ -137,6 +140,25 @@ I have read and agree to the tester terms:
       setFoundingStatus('idle')
       setAgreedToTesterTerms(false)
     }
+
+    // ── Founding spots remaining ──────────────────────────────────────────
+    const [foundingSpotsLeft, setFoundingSpotsLeft] = useState<number | null>(null)
+
+    useEffect(() => {
+      async function fetchSpots() {
+        const { createClient } = await import('@supabase/supabase-js')
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const { count } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .eq('founding_member', true)
+        if (count !== null) setFoundingSpotsLeft(Math.max(0, 10 - count))
+      }
+      fetchSpots()
+    }, [])
 
     // ── NEW: track button position so the fixed panel lines up ──────────────
     const [btnRect, setBtnRect] = useState<{ top: number; left: number } | null>(null)
@@ -575,7 +597,8 @@ I have read and agree to the tester terms:
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>42ms ALERT LATENCY</div>
               <div className="hero-stat rounded-xl border px-4 py-2 text-xs tracking-[0.16em]" style={{ borderColor: `${accent}86`, backgroundColor: `${panel}B8` }}>GLOBAL COVERAGE</div>
             </div>
-            {/* ── Waitlist capture ── */}
+            {/* ── Waitlist capture — hidden when all founding spots are claimed ── */}
+            {foundingSpotsLeft !== 0 && (
             <div className="hero-subline mx-auto mt-8 flex flex-col items-center gap-3 max-w-md w-full px-4">
               {waitlistStatus === 'success' ? (
                 <div
@@ -620,6 +643,7 @@ I have read and agree to the tester terms:
                 Pro launching May 28 · First 10 get free Pro forever
               </p>
             </div>
+            )}
           </section>
 
           {/* ── Founding Member Banner ── */}
@@ -644,7 +668,7 @@ I have read and agree to the tester terms:
                   style={{ background: `${accent}10`, border: `1px solid ${accent}22`, color: `${accent}44` }}>
                   Loading...
                 </div>
-              ) : currentUser ? (
+              ) : foundingSpotsLeft === 0 ? null : currentUser ? (
                 <button
                   type="button"
                   onClick={() => { setFoundingModalOpen(true); setFoundingStatus('idle') }}
@@ -1144,22 +1168,20 @@ I have read and agree to the tester terms:
                   </label>
 
                   {/* ── CTA: opens mailto then shows success ── */}
-                  <a
-                    href={agreedToTesterTerms ? mailtoHref : undefined}
-                    onClick={() => agreedToTesterTerms && handleClaimSpot()}
-                    aria-disabled={!agreedToTesterTerms}
+                  <button
+                    type="button"
+                    onClick={handleClaimSpot}
+                    disabled={!agreedToTesterTerms}
                     className="block w-full rounded-xl py-3 text-sm font-semibold text-center"
                     style={{
-                      background:     agreedToTesterTerms ? accent : `${accent}33`,
-                      color:          agreedToTesterTerms ? base   : `${accent}66`,
-                      cursor:         agreedToTesterTerms ? 'pointer' : 'not-allowed',
-                      pointerEvents:  agreedToTesterTerms ? 'auto' : 'none',
-                      transition:     'background 220ms ease, color 220ms ease',
-                      textDecoration: 'none',
+                      background:    agreedToTesterTerms ? accent : `${accent}33`,
+                      color:         agreedToTesterTerms ? base   : `${accent}66`,
+                      cursor:        agreedToTesterTerms ? 'pointer' : 'not-allowed',
+                      transition:    'background 220ms ease, color 220ms ease',
                     }}
                   >
                     Send Feedback to Claim Spot →
-                  </a>
+                  </button>
 
                   <p className="text-center text-xs font-mono mt-4" style={{ color: `${accent}55` }}>
                     Opens your email client · No credit card ever

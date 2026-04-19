@@ -36,7 +36,6 @@ export default function SignupPage() {
   const ref          = searchParams.get('ref') // e.g. 'founding'
 
   async function handleSignup() {
-    // Must agree to policies before proceeding
     if (!agreedToTerms) {
       setTermsError(true)
       setTimeout(() => setTermsError(false), 2800)
@@ -54,22 +53,24 @@ export default function SignupPage() {
     }
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email:    parsed.data.email,
       password: parsed.data.password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // Stored in auth.users.raw_user_meta_data — a DB trigger reads
+        // this on profile creation and sets profiles.founding_member = true
+        data: { founding_member: ref === 'founding' },
       },
     })
 
-    if (error) {
+    if (signUpError) {
       setError('Could not create account. Please try again.')
       setLoading(false)
-    } else {
-      // If they came from the founding banner, send them back to the landing
-      // page with ?ref=founding so the modal auto-opens after session resolves
-      router.push(ref === 'founding' ? '/?ref=founding' : '/dashboard')
+      return
     }
+
+    router.push(ref === 'founding' ? '/founding' : '/dashboard')
   }
 
   return (
@@ -180,10 +181,25 @@ export default function SignupPage() {
                   backdropFilter: 'blur(20px)',
                 }}>
                   <CardHeader className="pb-4" style={{ borderBottom: `1px solid ${accent}15` }}>
-                    <CardTitle className="text-2xl font-bold text-white text-center">Create Account</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-white text-center">
+                      {ref === 'founding' ? 'Join as Founding Member' : 'Create Account'}
+                    </CardTitle>
                   </CardHeader>
 
                   <CardContent className="space-y-5 pt-6">
+                    {/* Founding member badge */}
+                    {ref === 'founding' && (
+                      <div
+                        className="rounded-xl px-4 py-3 flex items-center gap-3"
+                        style={{ background: `${accent}0E`, border: `1px solid ${accent}30` }}
+                      >
+                        <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: accent }}>◈</span>
+                        <p className="text-xs font-mono" style={{ color: `${accent}CC` }}>
+                          You&apos;re claiming a founding member spot — Pro free forever.
+                        </p>
+                      </div>
+                    )}
+
                     {error && (
                       <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                         className="rounded-lg p-3 border"
@@ -225,7 +241,6 @@ export default function SignupPage() {
                         aria-checked={agreedToTerms}
                         role="checkbox"
                       >
-                        {/* Checkbox box */}
                         <span
                           className="mt-0.5 shrink-0 flex items-center justify-center rounded transition-all duration-200"
                           style={{
@@ -247,8 +262,6 @@ export default function SignupPage() {
                             </svg>
                           )}
                         </span>
-
-                        {/* Text */}
                         <span className="text-xs font-mono leading-relaxed" style={{
                           color: termsError ? '#F87171' : 'rgba(255,255,255,0.5)',
                           transition: 'color 200ms ease',
@@ -280,7 +293,6 @@ export default function SignupPage() {
                       </button>
                     </motion.div>
 
-                    {/* Create Account button — visually dims when policies not agreed */}
                     <Button
                       className="w-full h-11 font-mono font-bold text-black"
                       style={{
@@ -293,7 +305,7 @@ export default function SignupPage() {
                       onClick={handleSignup}
                       disabled={loading}
                     >
-                      {loading ? 'Processing...' : 'Create Account'}
+                      {loading ? 'Processing...' : ref === 'founding' ? 'Claim My Spot →' : 'Create Account'}
                     </Button>
 
                     <div className="pt-4 text-center" style={{ borderTop: `1px solid ${accent}15` }}>
